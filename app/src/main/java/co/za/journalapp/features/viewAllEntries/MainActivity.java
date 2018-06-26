@@ -1,7 +1,9 @@
-package co.za.journalapp;
+package co.za.journalapp.features.viewAllEntries;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+
+import co.za.journalapp.R;
 
 public class MainActivity extends AppCompatActivity {
 
