@@ -1,3 +1,6 @@
 <resources>
     <string name="app_name">JournalApp</string>
+
+   <!-- //error meesages!-->
+    <string name="null_event">Event cannot be null</string>
 </resources>
