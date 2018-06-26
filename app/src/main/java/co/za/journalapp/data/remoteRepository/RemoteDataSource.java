@@ -11,7 +11,7 @@ public class RemoteDataSource implements JournalRepository {
 
 
     @Override
-    public void insertEntry(JournalEntryEntity event, LoadInfoCallback callback) {
+    public void insertEntry(JournalEntryEntity event) {
 
     }
 
@@ -21,7 +21,8 @@ public class RemoteDataSource implements JournalRepository {
     }
 
     @Override
-    public void deleteEntry(JournalEntryEntity event) {
+    public void deleteEntry(JournalEntryEntity entry) {
 
     }
+
 }

@@ -22,9 +22,9 @@ public interface JournalRepository {
         void onDataNotDeleted(String error);
     }
 
-    void insertEntry(JournalEntryEntity event, final LoadInfoCallback callback);
+    void insertEntry(JournalEntryEntity event);
 
     LiveData<List<JournalEntryEntity>> getAllEntries();
 
-    void deleteEntry(JournalEntryEntity entry, final DeleteInfoCallback callback);
+    void deleteEntry(JournalEntryEntity entry);
 }

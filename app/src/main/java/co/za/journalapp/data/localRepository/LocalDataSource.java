@@ -20,9 +20,9 @@ public class LocalDataSource implements JournalRepository {
 
 
     @Override
-    public void insertEntry(JournalEntryEntity event, LoadInfoCallback callback) {
+    public void insertEntry(JournalEntryEntity event) {
         journalEntryDao.insertEntry(event);
-        callback.onDataLoaded("success");
+
     }
 
     @Override
@@ -32,8 +32,7 @@ public class LocalDataSource implements JournalRepository {
 
 
     @Override
-    public void deleteEntry(JournalEntryEntity entry, DeleteInfoCallback callback) {
+    public void deleteEntry(JournalEntryEntity entry) {
          journalEntryDao.deleteTask(entry);
-         callback.onDataDeleted("success");
     }
 }

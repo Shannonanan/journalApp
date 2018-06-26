@@ -14,19 +14,19 @@ public class JournalEntryEntity {
 
     @PrimaryKey(autoGenerate = true)
     private int id;
-    private Date date;
+    private String date;
     private String time;
     private String writtenEntry;
 
     @Ignore
-    public JournalEntryEntity(Date date, String time,
+    public JournalEntryEntity(String date, String time,
                                 String writtenEntry) {
         this.date = date;
         this.time = time;
         this.writtenEntry = writtenEntry;
     }
 
-    public JournalEntryEntity(int id, Date date,
+    public JournalEntryEntity(int id, String date,
                                 String time,
                                 String writtenEntry) {
         this.id = id;
@@ -45,11 +45,11 @@ public class JournalEntryEntity {
     }
 
 
-    public Date getDate() {
+    public String getDate() {
         return date;
     }
 
-    public void setDate(Date date) {
+    public void setDate(String date) {
         this.date = date;
     }
 

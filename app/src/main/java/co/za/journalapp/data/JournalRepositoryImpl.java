@@ -1,26 +1,21 @@
 package co.za.journalapp.data;
 
+import android.arch.lifecycle.LifecycleOwner;
 import android.arch.lifecycle.LiveData;
-import android.content.res.Resources;
-import android.support.annotation.Nullable;
-
-import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-
-import co.za.journalapp.R;
 import co.za.journalapp.data.localRepository.JournalEntryEntity;
-import co.za.journalapp.data.localRepository.LocalDataSource;
-import co.za.journalapp.data.remoteRepository.RemoteDataSource;
+
 
 public class JournalRepositoryImpl implements JournalRepository {
 
     private static JournalRepositoryImpl INSTANCE = null;
 
-    private final RemoteDataSource mRemoteDataSource;
-    private final LocalDataSource mLocalDataSource;
+   // private final RemoteDataSource mRemoteDataSource;
+    private final JournalRepository mLocalDataSource;
     private  LiveData<List<JournalEntryEntity>> entries;
-
+    public Map<Object, JournalEntryEntity> mCachedInfo;
 
     /**
      * Marks the cache as invalid, to force an update the next time data is requested. This variable
@@ -28,40 +23,56 @@ public class JournalRepositoryImpl implements JournalRepository {
      */
     private boolean mCacheIsDirty = false;
 
-    public JournalRepositoryImpl(RemoteDataSource mRemoteDataSource, LocalDataSource mLocalDataSource) {
-        this.mRemoteDataSource = mRemoteDataSource;
+    public JournalRepositoryImpl(JournalRepository mLocalDataSource) {
         this.mLocalDataSource = mLocalDataSource;
     }
 
 
     @Override
-    public void insertEntry(JournalEntryEntity entry, final LoadInfoCallback callback) {
+    public void insertEntry(JournalEntryEntity entry) {
         if (entry == null){
-             callback.onDataNotAvailable(Resources.getSystem().getString(R.string.null_event));
+            // callback.onDataNotAvailable(Resources.getSystem().getString(R.string.null_event));
         }
-        mRemoteDataSource.insertEntry(entry, new LoadInfoCallback() {
-            @Override
-            public void onDataLoaded(String success) {
-                callback.onDataLoaded(success);
-            }
+        // Do in memory cache update to keep the app UI up to date
+        if (mCachedInfo == null) {
+            mCachedInfo = new LinkedHashMap<>();
+        }
+        mLocalDataSource.insertEntry(entry);
+        mCachedInfo.put(entry.getId(), entry);
 
-            @Override
-            public void onDataNotAvailable(String error) {
-
-            }
-        });
     }
 
     @Override
     public LiveData<List<JournalEntryEntity>> getAllEntries() {
             // Query the local storage if available. If not, query the network.
+        // Do in memory cache update to keep the app UI up to date
+
         return entries = mLocalDataSource.getAllEntries();
+
         }
 
 
     @Override
-    public void deleteEntry(JournalEntryEntity entry, final DeleteInfoCallback callback ) {
-        mRemoteDataSource.deleteEntry(entry);
-        callback.onDataDeleted("success");
+    public void deleteEntry(JournalEntryEntity entry) {
+        mLocalDataSource.deleteEntry(entry);
+        mCachedInfo.clear();
+
     }
+    /**
+     * Returns the single instance of this class, creating it if necessary.
+     *used for testing
+     * @param localDataSource  the device storage data source
+     * @return the {@link JournalRepositoryImpl} instance
+     */
+    public static JournalRepositoryImpl getInstance(JournalRepository localDataSource) {
+        if (INSTANCE == null) {
+            INSTANCE = new JournalRepositoryImpl(localDataSource);
+        }
+        return INSTANCE;
+    }
+
+    public static void destroyInstance() {
+        INSTANCE = null;
+    }
+
 }
