@@ -5,7 +5,11 @@ import android.arch.lifecycle.LiveData;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+
+
 import co.za.journalapp.data.localRepository.JournalEntryEntity;
+import io.reactivex.Completable;
+import io.reactivex.functions.Action;
 
 
 public class JournalRepositoryImpl implements JournalRepository {
@@ -29,33 +33,47 @@ public class JournalRepositoryImpl implements JournalRepository {
 
 
     @Override
-    public void insertEntry(JournalEntryEntity entry) {
+    public Completable insertEntry(final JournalEntryEntity entry) {
+
         if (entry == null){
-            // callback.onDataNotAvailable(Resources.getSystem().getString(R.string.null_event));
+            return Completable.error(new IllegalArgumentException("Event cannot be null"));
         }
         // Do in memory cache update to keep the app UI up to date
         if (mCachedInfo == null) {
             mCachedInfo = new LinkedHashMap<>();
         }
-        mLocalDataSource.insertEntry(entry);
-        mCachedInfo.put(entry.getId(), entry);
+        return Completable.fromAction(new Action() {
+            @Override
+            public void run() throws Exception {
+                mLocalDataSource.insertEntry(entry);
+                mCachedInfo.put(entry.getId(), entry);
+            }
+        });
 
     }
 
     @Override
     public LiveData<List<JournalEntryEntity>> getAllEntries() {
+        //CHECK HERE FOR INFO IN LOCAL IF SOMETHING ASK TO BACK UP TO CLOUD OR IF NOTHING PULL FROM CLOUD?
             // Query the local storage if available. If not, query the network.
         // Do in memory cache update to keep the app UI up to date
 
-        return entries = mLocalDataSource.getAllEntries();
+        return  mLocalDataSource.getAllEntries();
 
         }
 
 
     @Override
-    public void deleteEntry(JournalEntryEntity entry) {
-        mLocalDataSource.deleteEntry(entry);
-        mCachedInfo.clear();
+    public Completable deleteEntry(final JournalEntryEntity entry) {
+       return Completable.fromAction(new Action() {
+           @Override
+           public void run() throws Exception {
+               mLocalDataSource.deleteEntry(entry);
+               mCachedInfo.clear();
+           }
+       });
+
+
 
     }
     /**

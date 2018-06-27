@@ -23,9 +23,9 @@ public interface JournalEntryDao {
 
 
     @Query("Select * From journal WHERE id = :id")
-    LiveData<JournalEntryEntity>getEntryById(int id);
+    LiveData<JournalEntryEntity> getEntryById(int id);
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertEntry(JournalEntryEntity entry);
 
     @Update(onConflict = OnConflictStrategy.REPLACE)
