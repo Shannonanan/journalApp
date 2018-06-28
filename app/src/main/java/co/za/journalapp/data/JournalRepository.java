@@ -18,10 +18,12 @@ public interface JournalRepository {
     }
 
 
-    //only indication of completion or exception
+    //completeable is only indication of completion or exception
     Completable insertEntry(JournalEntryEntity event);
 
     LiveData<List<JournalEntryEntity>> getAllEntries();
 
-    Completable deleteEntry(JournalEntryEntity entry);
+    LiveData<JournalEntryEntity> getEntry(int id);
+
+  //  Completable deleteEntry(JournalEntryEntity entry);
 }

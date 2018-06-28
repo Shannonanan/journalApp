@@ -41,14 +41,19 @@ public class LocalDataSource implements JournalRepository {
             return journalEntryDao.loadAllEntries();
     }
 
-
     @Override
-    public Completable deleteEntry(final JournalEntryEntity entry) {
-        return Completable.fromAction(new Action() {
-            @Override
-            public void run() throws Exception {
-                journalEntryDao.deleteTask(entry);
-            }
-        });
+    public LiveData<JournalEntryEntity> getEntry(int id) {
+        return null;
     }
+
+
+//    @Override
+//    public Completable deleteEntry(final JournalEntryEntity entry) {
+//        return Completable.fromAction(new Action() {
+//            @Override
+//            public void run() throws Exception {
+//                journalEntryDao.deleteTask(entry);
+//            }
+//        });
+//    }
 }

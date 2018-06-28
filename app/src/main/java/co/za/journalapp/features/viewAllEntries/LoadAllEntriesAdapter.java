@@ -45,6 +45,8 @@ public class LoadAllEntriesAdapter extends RecyclerView.Adapter<LoadAllEntriesAd
             JournalEntryEntity entryEntity = this.entryCollection.get(position);
 
             entryViewHolder.mEntry.setText(entryEntity.getWrittenEntry());
+
+
     }
 
 
@@ -70,7 +72,7 @@ public class LoadAllEntriesAdapter extends RecyclerView.Adapter<LoadAllEntriesAd
         return entryCollection;
     }
 
-    static class EntryViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+     class EntryViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         @BindView(R.id.date) TextView mDate;
         @BindView(R.id.time)TextView mTime;
@@ -80,11 +82,13 @@ public class LoadAllEntriesAdapter extends RecyclerView.Adapter<LoadAllEntriesAd
         public EntryViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
+            itemView.setOnClickListener(this);
         }
 
         @Override
         public void onClick(View view) {
-
+            int elementId = entryCollection.get(getAdapterPosition()).getId();
+            mItemClickListener.onItemClickListener(elementId);
         }
     }
 }

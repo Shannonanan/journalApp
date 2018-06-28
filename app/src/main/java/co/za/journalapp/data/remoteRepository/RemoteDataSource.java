@@ -22,7 +22,7 @@ public class RemoteDataSource implements JournalRepository {
     }
 
     @Override
-    public Completable deleteEntry(JournalEntryEntity entry) {
+    public LiveData<JournalEntryEntity> getEntry(int id) {
         return null;
     }
 

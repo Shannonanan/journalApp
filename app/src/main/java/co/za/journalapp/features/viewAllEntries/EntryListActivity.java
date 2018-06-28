@@ -14,6 +14,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import java.util.List;
 
@@ -27,6 +28,7 @@ import co.za.journalapp.data.localRepository.JournalEntryDatabase;
 import co.za.journalapp.data.localRepository.JournalEntryEntity;
 import co.za.journalapp.data.localRepository.LocalDataSource;
 import co.za.journalapp.features.add.AddEntryActivity;
+import co.za.journalapp.features.detail.DetailActivity;
 
 public class EntryListActivity extends AppCompatActivity implements LoadAllEntriesAdapter.ItemClickListener {
 
@@ -39,6 +41,7 @@ public class EntryListActivity extends AppCompatActivity implements LoadAllEntri
     private JournalRepositoryImpl journalRepository;
     private LocalDataSource localDataSource;
     private EntryListViewModel entryListViewModel;
+    private static final String ENTRY_ID = "ENTRY_ID";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,14 +50,7 @@ public class EntryListActivity extends AppCompatActivity implements LoadAllEntri
 
         ButterKnife.bind(this);
         setupRecyclerView();
-        fabButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // Create a new intent to start an AddTaskActivity
-                Intent addTaskIntent = new Intent(EntryListActivity.this, AddEntryActivity.class);
-                startActivity(addTaskIntent);
-            }
-        });
+        setupFab();
 
 
         new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
@@ -80,14 +76,26 @@ public class EntryListActivity extends AppCompatActivity implements LoadAllEntri
         mDb = JournalEntryDatabase.getInstance(getApplicationContext());
         JournalEntryDao journalEntryDao = mDb.journalEntryDao();
         localDataSource = new LocalDataSource(journalEntryDao, AppExecutors.getInstance());
-        journalRepository = new JournalRepositoryImpl(localDataSource);
+        journalRepository = new JournalRepositoryImpl(localDataSource, mDb);
         setupViewModel();
+    }
+
+    private void setupFab() {
+        fabButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // Create a new intent to start an AddTaskActivity
+                Intent addTaskIntent = new Intent(EntryListActivity.this, AddEntryActivity.class);
+                startActivity(addTaskIntent);
+            }
+        });
     }
 
     private void setupViewModel() {
         ViewModelProvider.Factory allEntriesViewModelFactory = new AllEntriesViewModelFactory(journalRepository);
         entryListViewModel = ViewModelProviders.of(this, allEntriesViewModelFactory)
                 .get(EntryListViewModel.class);
+        //gets all entries
         entryListViewModel.getEntries().observe(this, new Observer<List<JournalEntryEntity>>() {
             @Override
             public void onChanged(@Nullable List<JournalEntryEntity> journalEntryEntities) {
@@ -105,6 +113,8 @@ public class EntryListActivity extends AppCompatActivity implements LoadAllEntri
 
     @Override
     public void onItemClickListener(int itemId) {
-        //This will be to go to Edit task Activity
+        Intent intent = new Intent(this, DetailActivity.class);
+        intent.putExtra(ENTRY_ID, itemId);
+        startActivity(intent);
     }
 }

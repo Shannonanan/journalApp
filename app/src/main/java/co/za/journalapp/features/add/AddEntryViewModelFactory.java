@@ -23,6 +23,6 @@ public class AddEntryViewModelFactory extends ViewModelProvider.NewInstanceFacto
     @NonNull
     @Override
     public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
-        return (T) new AddEntryViewModel(mDb, mEntryId);
+        return (T) new AddEntryViewModel(mDb, journalRepository, mEntryId);
     }
 }

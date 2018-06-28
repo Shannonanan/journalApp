@@ -52,7 +52,7 @@ public class AddEntryActivity extends AppCompatActivity {
         mDb = JournalEntryDatabase.getInstance(getApplicationContext());
         JournalEntryDao journalEntryDao = mDb.journalEntryDao();
         localDataSource = new LocalDataSource(journalEntryDao, AppExecutors.getInstance());
-        journalRepository = new JournalRepositoryImpl(localDataSource);
+        journalRepository = new JournalRepositoryImpl(localDataSource, mDb);
 
         setupClickListeners();
         setupViewModel();
@@ -86,63 +86,56 @@ public class AddEntryActivity extends AppCompatActivity {
                 addEntryViewModel.setEntry(editable.toString());
             }
         });
-        tv_time.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-                addEntryViewModel.setDate("test 1");
-            }
-        });
-        tv_date.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-                addEntryViewModel.setTime("test Time 1");
-            }
-        });
+//        tv_time.addTextChangedListener(new TextWatcher() {
+//            @Override
+//            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+//
+//            }
+//
+//            @Override
+//            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+//
+//            }
+//
+//            @Override
+//            public void afterTextChanged(Editable editable) {
+//                addEntryViewModel.setDate("test 1");
+//            }
+//        });
+//        tv_date.addTextChangedListener(new TextWatcher() {
+//            @Override
+//            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) { }
+//
+//            @Override
+//            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) { }
+//
+//            @Override
+//            public void afterTextChanged(Editable editable) {
+//                addEntryViewModel.setTime("test Time 1"); }
+//        });
     }
 
     @OnClick(R.id.btn_post)
     public  void postEntry()
     {
-
-
-        final JournalEntryEntity task = new JournalEntryEntity("test", "test", "test");
-        AppExecutors.getInstance().diskIO().execute(new Runnable() {
-            @Override
-            public void run() {
-                if (mTaskId == DEFAULT_TASK_ID) {
-                    // insert new task
-                    mDb.journalEntryDao().insertEntry(task);
-                } else {
-                    //update task
-                    task.setId(mTaskId);
-                    mDb.journalEntryDao().updateTask(task);
-                }
-                finish();
-            }
-        });
-//        addEntryViewModel.addEntry();
-//        Toast.makeText(this, "journal entry saved", Toast.LENGTH_LONG).show();
-//        finish();
+        final JournalEntryEntity task = new JournalEntryEntity("test", "test", et_entry.getText().toString());
+//        AppExecutors.getInstance().diskIO().execute(new Runnable() {
+//            @Override
+//            public void run() {
+//                if (mTaskId == DEFAULT_TASK_ID) {
+//                    // insert new task
+//                    mDb.journalEntryDao().insertEntry(task);
+//                } else {
+//                    //update task
+//                    task.setId(mTaskId);
+//                    mDb.journalEntryDao().updateTask(task);
+//                }
+//                finish();
+//            }
+//        });
+        addEntryViewModel.addEntry(task);
+        Toast.makeText(this, getString(R.string.save_post), Toast.LENGTH_LONG).show();
+        finish();
 
     }
 }
