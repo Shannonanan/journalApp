@@ -43,13 +43,11 @@ public class LoadAllEntriesAdapter extends RecyclerView.Adapter<LoadAllEntriesAd
     @Override
     public void onBindViewHolder(@NonNull EntryViewHolder entryViewHolder, int position) {
             JournalEntryEntity entryEntity = this.entryCollection.get(position);
-
+            entryViewHolder.mDate.setText(entryEntity.getDate());
+            entryViewHolder.mTime.setText(entryEntity.getTime());
             entryViewHolder.mEntry.setText(entryEntity.getWrittenEntry());
 
-
     }
-
-
 
     @Override
     public int getItemCount() {

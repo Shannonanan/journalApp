@@ -53,7 +53,7 @@ public class JournalRepositoryImpl implements JournalRepository {
         return Completable.fromAction(new Action() {
             @Override
             public void run() throws Exception {
-                //  mLocalDataSource.insertEntry(entry);
+              //    mLocalDataSource.insertEntry(entry);
                 mDb.journalEntryDao().insertEntry(entry);
                 mCachedInfo.put(entry.getId(), entry);
             }

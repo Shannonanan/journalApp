@@ -12,6 +12,10 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.joda.time.DateTime;
+
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 import butterknife.BindView;
@@ -56,6 +60,7 @@ public class AddEntryActivity extends AppCompatActivity {
 
         setupClickListeners();
         setupViewModel();
+        getCurrentDate();
     }
 
 
@@ -86,56 +91,61 @@ public class AddEntryActivity extends AppCompatActivity {
                 addEntryViewModel.setEntry(editable.toString());
             }
         });
-//        tv_time.addTextChangedListener(new TextWatcher() {
-//            @Override
-//            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-//
-//            }
-//
-//            @Override
-//            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-//
-//            }
-//
-//            @Override
-//            public void afterTextChanged(Editable editable) {
-//                addEntryViewModel.setDate("test 1");
-//            }
-//        });
-//        tv_date.addTextChangedListener(new TextWatcher() {
-//            @Override
-//            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) { }
-//
-//            @Override
-//            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) { }
-//
-//            @Override
-//            public void afterTextChanged(Editable editable) {
-//                addEntryViewModel.setTime("test Time 1"); }
-//        });
     }
 
     @OnClick(R.id.btn_post)
     public  void postEntry()
     {
-        final JournalEntryEntity task = new JournalEntryEntity("test", "test", et_entry.getText().toString());
-//        AppExecutors.getInstance().diskIO().execute(new Runnable() {
-//            @Override
-//            public void run() {
-//                if (mTaskId == DEFAULT_TASK_ID) {
-//                    // insert new task
-//                    mDb.journalEntryDao().insertEntry(task);
-//                } else {
-//                    //update task
-//                    task.setId(mTaskId);
-//                    mDb.journalEntryDao().updateTask(task);
-//                }
-//                finish();
-//            }
-//        });
+        final JournalEntryEntity task = new JournalEntryEntity(getCurrentDate(), getCurrentTime(), et_entry.getText().toString());
         addEntryViewModel.addEntry(task);
         Toast.makeText(this, getString(R.string.save_post), Toast.LENGTH_LONG).show();
         finish();
 
+    }
+
+    public String getCurrentDate(){
+        Date c = Calendar.getInstance().getTime();
+        SimpleDateFormat df = new SimpleDateFormat("dd-MMM-yyyy");
+        String formattedDate = toDate(c);
+        return formattedDate;
+    }
+
+    public String getCurrentTime(){
+        Date c = Calendar.getInstance().getTime();
+        SimpleDateFormat df = new SimpleDateFormat("dd-MMM-yyyy");
+        String formattedDate = toTime(c);
+        return formattedDate;
+    }
+
+    public String toDate(Date timestamp) {
+        DateTime posted = new DateTime(timestamp);
+
+        int days = posted.toLocalDate().getDayOfMonth();
+        String months = posted.monthOfYear().getAsShortText();
+        int years = posted.toLocalDate().getYear();
+        String dayName = posted.toLocalDate().dayOfWeek().getAsShortText();
+
+        String day = String.valueOf(days);
+        String year = String.valueOf(years);
+
+        return dayName + " " + day + " " + months + " " + year;
+    }
+
+    public String toTime(Date timestamp) {
+        DateTime posted = new DateTime(timestamp);
+
+        int hours = posted.toDateTime().getHourOfDay();
+        int minutes = posted.toDateTime().getMinuteOfHour();
+
+
+        String hoursInDay = String.valueOf(hours);
+        String minInDay = String.valueOf(minutes);
+
+
+        if(hours < 10)
+            return "0" + hoursInDay + ":" + minInDay;
+
+        else{
+            return hoursInDay + ":" + minInDay;}
     }
 }

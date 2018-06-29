@@ -18,37 +18,15 @@ import timber.log.Timber;
 public class AddEntryViewModel extends ViewModel{
 
     private JournalRepositoryImpl journalRepository;
-//    private String date;
-//    private String time;
     private String writtenEntry;
 
     private LiveData<JournalEntryEntity> entry;
-
-//    public AddEntryViewModel(JournalRepositoryImpl journalRepository) {
-//        this.journalRepository = journalRepository;
-//        entry = database.taskDao().loadTaskById(taskId);
-//    }
 
     public AddEntryViewModel(JournalEntryDatabase database, JournalRepositoryImpl journalRepository, int taskId) {
         this.journalRepository = journalRepository;
         entry = database.journalEntryDao().getEntryById(taskId);
     }
-//
-//    public String getDate() {
-//        return date;
-//    }
-//
-//    public void setDate(String date) {
-//        this.date = date;
-//    }
-//
-//    public String getTime() {
-//        return time;
-//    }
-//
-//    public void setTime(String time) {
-//        this.time = time;
-//    }
+
 
     public String getEntry() {
         return writtenEntry;

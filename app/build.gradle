@@ -42,6 +42,9 @@ dependencies {
     //FAB dependencies
     implementation 'com.android.support:design:28.0.0-alpha3'
 
+    //DateTime dependency
+    implementation 'joda-time:joda-time:2.9.9'
+
     implementation 'com.jakewharton.threetenabp:threetenabp:1.0.5'
     implementation 'com.jakewharton.timber:timber:4.6.0'
     implementation 'com.jakewharton:butterknife:8.8.1'
