@@ -8,8 +8,14 @@ import android.arch.persistence.room.PrimaryKey;
 
 import java.util.Date;
 
-@Entity(tableName = "journal",  indices = {@Index(value = {"id"}, unique = true)})
+import static co.za.journalapp.data.localRepository.JournalEntryEntity.TABLE_NAME;
+//indices = {@Index(value = {"id"}, unique = true
+
+
+@Entity(tableName = TABLE_NAME)
 public class JournalEntryEntity {
+
+    public static final String TABLE_NAME = "journal";
 
 
     @PrimaryKey(autoGenerate = true)

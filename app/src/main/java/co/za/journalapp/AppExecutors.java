@@ -47,6 +47,7 @@ public class AppExecutors {
     public static AppExecutors getInstance() {
         if (sInstance == null) {
             synchronized (LOCK) {
+                //newSingleThreadExecutor() - Creates an Executor that uses a single worker thread operating off an unbounded queue.
                 sInstance = new AppExecutors(Executors.newSingleThreadExecutor(),
                         Executors.newFixedThreadPool(3),
                         new MainThreadExecutor());
