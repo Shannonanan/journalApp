@@ -25,26 +25,28 @@ public class DetailViewModel extends ViewModel {
     }
 
 
-   LiveData<JournalEntryEntity>getEntry(int id){
+    LiveData<JournalEntryEntity>getEntry(int id){
+        return journalRepository.getEntry(id);
+    }
 
-       return journalRepository.getEntry(id);
-//        journalRepository.getEntry(id).observeOn(AndroidSchedulers.mainThread())
-//                .subscribeOn(Schedulers.io())
-//                .subscribe(new CompletableObserver() {
-//                    @Override
-//                    public void onSubscribe(Disposable d) {
-//
-//                    }
-//
-//                    @Override
-//                    public void onComplete() {
-//                        Timber.d("onComplete - successfully added event");
-//                    }
-//
-//                    @Override
-//                    public void onError(Throwable e) {
-//                        Timber.d(e, "onError - add:");
-//                    }
-//                });
+    public void updateEntry(JournalEntryEntity journalEntryEntity){
+         journalRepository.updateEntry(journalEntryEntity).observeOn(AndroidSchedulers.mainThread())
+                 .subscribeOn(Schedulers.io())
+                 .subscribe(new CompletableObserver() {
+                     @Override
+                     public void onSubscribe(Disposable d) {
+
+                     }
+
+                     @Override
+                     public void onComplete() {
+
+                     }
+
+                     @Override
+                     public void onError(Throwable e) {
+
+                     }
+                 });
     }
 }

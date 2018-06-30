@@ -46,6 +46,11 @@ public class LocalDataSource implements JournalRepository {
         return null;
     }
 
+    @Override
+    public Completable updateEntry(JournalEntryEntity entity) {
+        return null;
+    }
+
 
 //    @Override
 //    public Completable deleteEntry(final JournalEntryEntity entry) {

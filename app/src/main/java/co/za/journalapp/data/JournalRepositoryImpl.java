@@ -76,6 +76,23 @@ public class JournalRepositoryImpl implements JournalRepository {
         return mDb.journalEntryDao().getEntryById(id);
     }
 
+    @Override
+    public Completable updateEntry(final JournalEntryEntity entry) {
+        if (entry == null) {
+            return Completable.error(new IllegalArgumentException("Entry cannot be null"));
+        }
+        // Do in memory cache update to keep the app UI up to date
+        if (mCachedInfo == null) {
+            mCachedInfo = new LinkedHashMap<>();
+        }
+        return Completable.fromAction(new Action() {
+            @Override
+            public void run() throws Exception {
+                mDb.journalEntryDao().updateEntry(entry);
+            }
+        });
+    }
+
 
 //    @Override
 //    public Completable deleteEntry(final JournalEntryEntity entry) {

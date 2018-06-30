@@ -6,4 +6,7 @@
 
     <string name="save_post">Success, post saved!</string>
     <string name="deleted_post">Success, post deleted!</string>
+
+    <string name="update_post">update post</string>
+    <string name="update_post_btn">update post</string>
 </resources>
