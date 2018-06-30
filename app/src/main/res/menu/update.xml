@@ -6,6 +6,6 @@
         android:id="@+id/menu_update_post"
         android:orderInCategory="1"
         app:showAsAction="ifRoom"
-        android:icon="@drawable/pencil_edit_button"
+        android:icon="@drawable/ic_pencil_edit_"
         />
 </menu>

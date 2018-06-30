@@ -36,11 +36,6 @@ public class AddEntryViewModel extends ViewModel{
         this.writtenEntry = writtenEntry;
     }
 
-
-    public LiveData<JournalEntryEntity> getAndAddTask(){
-        return entry;
-    }
-
     public void addEntry(JournalEntryEntity entry){
         journalRepository.insertEntry(entry).observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
