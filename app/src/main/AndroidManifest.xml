@@ -20,7 +20,8 @@
         <activity android:name=".features.detail.DetailActivity" />
         <activity android:name=".Splash" />
         <activity android:name=".authentication.BaseActivity"></activity>
-        <activity android:name=".authentication.GoogleSignInActivity" >
+        <activity android:name=".authentication.GoogleSignInActivity"
+            android:theme="@style/ThemeOverlay.MyNoTitleActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

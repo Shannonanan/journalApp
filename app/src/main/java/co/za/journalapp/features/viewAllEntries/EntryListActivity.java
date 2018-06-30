@@ -9,10 +9,13 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
@@ -22,6 +25,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import co.za.journalapp.AppExecutors;
 import co.za.journalapp.R;
+import co.za.journalapp.authentication.GoogleSignInActivity;
 import co.za.journalapp.data.JournalRepositoryImpl;
 import co.za.journalapp.data.localRepository.JournalEntryDao;
 import co.za.journalapp.data.localRepository.JournalEntryDatabase;
@@ -29,6 +33,8 @@ import co.za.journalapp.data.localRepository.JournalEntryEntity;
 import co.za.journalapp.data.localRepository.LocalDataSource;
 import co.za.journalapp.features.add.AddEntryActivity;
 import co.za.journalapp.features.detail.DetailActivity;
+
+import static android.support.v7.widget.DividerItemDecoration.VERTICAL;
 
 public class EntryListActivity extends AppCompatActivity implements LoadAllEntriesAdapter.ItemClickListener {
 
@@ -109,6 +115,9 @@ public class EntryListActivity extends AppCompatActivity implements LoadAllEntri
         recyclerview.setLayoutManager(new LinearLayoutManager(this));
         mAdapter = new LoadAllEntriesAdapter(this,this);
         recyclerview.setAdapter(mAdapter);
+
+        DividerItemDecoration decoration = new DividerItemDecoration(getApplicationContext(), VERTICAL);
+        recyclerview.addItemDecoration(decoration);
     }
 
     @Override
@@ -116,5 +125,26 @@ public class EntryListActivity extends AppCompatActivity implements LoadAllEntri
         Intent intent = new Intent(this, DetailActivity.class);
         intent.putExtra(ENTRY_ID, itemId);
         startActivity(intent);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.options, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int menuItemThatWasSelected = item.getItemId();
+        if(menuItemThatWasSelected == R.id.menu_sign_out) {
+            GoogleSignInActivity.signOutFromMain();
+            finish();
+        }
+        return true;
+    }
+
+    @Override
+    public void onBackPressed() {
+       Toast.makeText(this, getString(R.string.sign_out_press), Toast.LENGTH_LONG).show();
     }
 }

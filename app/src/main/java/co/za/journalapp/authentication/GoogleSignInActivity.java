@@ -31,6 +31,7 @@ import co.za.journalapp.features.viewAllEntries.EntryListActivity;
 public class GoogleSignInActivity extends BaseActivity implements
         View.OnClickListener {
 
+    private static GoogleSignInActivity INSTANCE;
     private static final String TAG = "GoogleActivity";
     private static final int RC_SIGN_IN = 9001;
 
@@ -42,19 +43,26 @@ public class GoogleSignInActivity extends BaseActivity implements
     private TextView mStatusTextView;
     private TextView mDetailTextView;
 
+    static boolean  signout =false;
+
+    public static void signOutFromMain()
+    {
+        signout = true;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register_and_login);
 
         // Views
-        mStatusTextView = findViewById(R.id.status);
-        mDetailTextView = findViewById(R.id.detail);
+     //   mStatusTextView = findViewById(R.id.status);
+     //   mDetailTextView = findViewById(R.id.detail);
 
         // Button listeners
         findViewById(R.id.sign_in_button).setOnClickListener(this);
-        findViewById(R.id.sign_out_button).setOnClickListener(this);
-        findViewById(R.id.disconnect_button).setOnClickListener(this);
+       // findViewById(R.id.sign_out_button).setOnClickListener(this);
+      //  findViewById(R.id.disconnect_button).setOnClickListener(this);
 
         // [START config_signin]
         // Configure Google Sign In
@@ -76,8 +84,11 @@ public class GoogleSignInActivity extends BaseActivity implements
     public void onStart() {
         super.onStart();
         // Check if user is signed in (non-null) and update UI accordingly.
+        if(!signout){
         FirebaseUser currentUser = mAuth.getCurrentUser();
-        updateUI(currentUser);
+        updateUI(currentUser);}
+        else {signOut();
+        signout = false;}
     }
     // [END on_start_check_user]
 
@@ -143,7 +154,7 @@ public class GoogleSignInActivity extends BaseActivity implements
     }
     // [END signin]
 
-    private void signOut() {
+    public void signOut() {
         // Firebase sign out
         mAuth.signOut();
 
@@ -153,6 +164,7 @@ public class GoogleSignInActivity extends BaseActivity implements
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         updateUI(null);
+                        //GOTO lOGIN sCREEN
                     }
                 });
     }
@@ -177,17 +189,17 @@ public class GoogleSignInActivity extends BaseActivity implements
 
             Intent intent = new Intent(this, EntryListActivity.class);
             startActivity(intent);
-            mStatusTextView.setText(getString(R.string.google_status_fmt, user.getEmail()));
-            mDetailTextView.setText(getString(R.string.firebase_status_fmt, user.getUid()));
-
-            findViewById(R.id.sign_in_button).setVisibility(View.GONE);
-            findViewById(R.id.sign_out_and_disconnect).setVisibility(View.VISIBLE);
+//            mStatusTextView.setText(getString(R.string.google_status_fmt, user.getEmail()));
+//            mDetailTextView.setText(getString(R.string.firebase_status_fmt, user.getUid()));
+//
+//            findViewById(R.id.sign_in_button).setVisibility(View.GONE);
+//            findViewById(R.id.sign_out_and_disconnect).setVisibility(View.VISIBLE);
         } else {
-            mStatusTextView.setText(R.string.signed_out);
-            mDetailTextView.setText(null);
+//            mStatusTextView.setText(R.string.signed_out);
+//            mDetailTextView.setText(null);
 
-            findViewById(R.id.sign_in_button).setVisibility(View.VISIBLE);
-            findViewById(R.id.sign_out_and_disconnect).setVisibility(View.GONE);
+          //  findViewById(R.id.sign_in_button).setVisibility(View.VISIBLE);
+           // findViewById(R.id.sign_out_and_disconnect).setVisibility(View.GONE);
         }
     }
 
@@ -195,11 +207,18 @@ public class GoogleSignInActivity extends BaseActivity implements
     public void onClick(View v) {
         int i = v.getId();
         if (i == R.id.sign_in_button) {
-            signIn();
-        } else if (i == R.id.sign_out_button) {
-            signOut();
-        } else if (i == R.id.disconnect_button) {
-            revokeAccess();
+            signIn();}
+//        } else if (i == R.id.sign_out_button) {
+//            signOut();
+//        } else if (i == R.id.disconnect_button) {
+//            revokeAccess();
+//        }
+    }
+
+    public static GoogleSignInActivity getInstance() {
+        if (INSTANCE == null) {
+            INSTANCE = new GoogleSignInActivity();
         }
+        return INSTANCE;
     }
 }
