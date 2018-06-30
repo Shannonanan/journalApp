@@ -25,5 +25,7 @@ public interface JournalRepository {
 
     LiveData<JournalEntryEntity> getEntry(int id);
 
+    Completable updateEntry(JournalEntryEntity entity);
+
   //  Completable deleteEntry(JournalEntryEntity entry);
 }

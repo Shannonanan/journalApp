@@ -45,7 +45,19 @@ public class LoadAllEntriesAdapter extends RecyclerView.Adapter<LoadAllEntriesAd
             JournalEntryEntity entryEntity = this.entryCollection.get(position);
             entryViewHolder.mDate.setText(entryEntity.getDate());
             entryViewHolder.mTime.setText(entryEntity.getTime());
+
+        String longEntry = entryEntity.getWrittenEntry();
+        String shortenedEntry;
+        if(longEntry.length() >= 35)
+        {
+            shortenedEntry = longEntry.substring(0,10);
+            entryViewHolder.mEntry.setText(shortenedEntry + "...");
+        }
+        else{
             entryViewHolder.mEntry.setText(entryEntity.getWrittenEntry());
+        }
+
+
 
     }
 

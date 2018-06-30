@@ -60,7 +60,6 @@ public class AddEntryActivity extends AppCompatActivity {
 
         setupClickListeners();
         setupViewModel();
-        getCurrentDate();
     }
 
 
@@ -69,8 +68,9 @@ public class AddEntryActivity extends AppCompatActivity {
         addEntryViewModel = ViewModelProviders.of(this, addEntryViewModelFactory)
                 .get(AddEntryViewModel.class);
         et_entry.setText(addEntryViewModel.getEntry());
-        tv_date.setText("date 1");
-        tv_time.setText("time 1");
+        tv_date.setText(getCurrentDate());
+        tv_time.setText(getCurrentTime());
+
     }
 
 

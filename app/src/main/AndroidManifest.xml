@@ -21,7 +21,6 @@
             </intent-filter>
         </activity>
         <activity android:name=".features.add.AddEntryActivity">
-            android:windowSoftInputMode="adjustPan">
         </activity>
         <activity android:name=".features.detail.DetailActivity"></activity>
     </application>

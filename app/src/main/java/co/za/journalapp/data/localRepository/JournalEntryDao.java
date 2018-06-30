@@ -29,7 +29,7 @@ public interface JournalEntryDao {
     void insertEntry(JournalEntryEntity entry);
 
     @Update(onConflict = OnConflictStrategy.REPLACE)
-    void updateTask(JournalEntryEntity entry);
+    void updateEntry(JournalEntryEntity entry);
 
     @Delete
     void deleteTask(JournalEntryEntity entry);
