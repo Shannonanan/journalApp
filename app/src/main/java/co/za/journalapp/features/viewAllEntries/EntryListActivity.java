@@ -176,9 +176,6 @@ public class EntryListActivity extends AppCompatActivity implements LoadAllEntri
                 GoogleSignInActivity.signOutFromMain();
                 finish();
                 break;
-            case R.id.menu_settings:
-                //go to preference frag
-                break;
             default:
                 break;
         }
