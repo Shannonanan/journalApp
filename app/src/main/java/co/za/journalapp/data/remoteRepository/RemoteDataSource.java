@@ -169,9 +169,63 @@ public class RemoteDataSource implements JournalRepository {
         mExecutors.networkIO().execute(saveRunnable);
     }
 
-    private JournalEntryEntity convertJournalPost(DocumentSnapshot documentSnapshot) {
-        JournalEntryEntity entry = documentSnapshot.toObject(JournalEntryEntity.class);
+    @Override
+    public void getEntriesRemotely(final String email, final LoadEntriesCallback callback) {
+        Runnable saveRunnable = new Runnable() {
+            @Override
+            public void run() {
+                Query query = db.collection(mContext.getString(R.string.path_to_posts));
+                query = query.whereEqualTo(mContext.getString(R.string.email), email);
+                query.get()
+                        .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                            @Override
+                            public void onSuccess(QuerySnapshot documentSnapshots) {
+                                JournalEntrySchema schema;
+                                JournalEntryEntity entryEntity;
+                                List<JournalEntryEntity> list = new ArrayList<>();
+                                for (DocumentSnapshot documentSnapshot : documentSnapshots) {
+                                    schema = convertJournalPost(documentSnapshot);
+                                    entryEntity = transform(schema);
+                                    list.add(entryEntity);
+                                }
+
+                                callback.onEntriesLoaded(list);
+                            }
+                        })
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                e.printStackTrace();
+                                callback.OnDataUnavailable(e.getMessage());
+                            }
+                        });
+
+            }
+        };
+        mExecutors.networkIO().execute(saveRunnable);
+    }
+
+    @Override
+    public void saveBatchToLocal(List<JournalEntryEntity> list) { }
+
+
+    private JournalEntrySchema convertJournalPost(DocumentSnapshot documentSnapshot) {
+        JournalEntrySchema entry = documentSnapshot.toObject(JournalEntrySchema.class);
         return entry;
+    }
+
+
+    public JournalEntryEntity transform(JournalEntrySchema schemaEntity) {
+        JournalEntryEntity entityPost = null;
+        if (schemaEntity != null) {
+            entityPost = new JournalEntryEntity();
+            entityPost.setId(schemaEntity.getId());
+            entityPost.setDate(schemaEntity.getDate());
+            entityPost.setTime(schemaEntity.getTime());
+            entityPost.setWrittenEntry(schemaEntity.getWrittenEntry());
+            entityPost.setEmail(schemaEntity.getEmail());
+        }
+        return entityPost;
     }
 
 }

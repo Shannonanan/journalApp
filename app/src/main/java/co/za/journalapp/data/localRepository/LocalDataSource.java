@@ -36,6 +36,18 @@ public class LocalDataSource implements JournalRepository {
 
     }
 
+    public void saveBatchToLocal(final  List<JournalEntryEntity>list) {
+        Runnable saveRunnable = new Runnable() {
+            @Override
+            public void run() {
+                for (JournalEntryEntity entry : list) {
+                    journalEntryDao.insertEntry(entry);
+                }
+            }
+        };
+        mExecutors.diskIO().execute(saveRunnable);
+    }
+
     @Override
     public LiveData<List<JournalEntryEntity>> getAllEntries() {
             return journalEntryDao.loadAllEntries();
@@ -73,6 +85,11 @@ public class LocalDataSource implements JournalRepository {
             }
         };
         mExecutors.diskIO().execute(saveRunnable);
+    }
+
+    @Override
+    public void getEntriesRemotely(String email, LoadEntriesCallback callback) {
+
     }
 
 

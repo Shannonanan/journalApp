@@ -19,6 +19,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.List;
@@ -29,6 +30,7 @@ import co.za.journalapp.AppExecutors;
 import co.za.journalapp.Constants;
 import co.za.journalapp.R;
 import co.za.journalapp.authentication.GoogleSignInActivity;
+import co.za.journalapp.data.JournalRepository;
 import co.za.journalapp.data.JournalRepositoryImpl;
 import co.za.journalapp.data.localRepository.JournalEntryDao;
 import co.za.journalapp.data.localRepository.JournalEntryDatabase;
@@ -46,6 +48,7 @@ public class EntryListActivity extends AppCompatActivity implements LoadAllEntri
     private static final String TAG = EntryListActivity.class.getSimpleName();
     @BindView(R.id.fab) FloatingActionButton fabButton;
     @BindView(R.id.recyclerview_Entries) RecyclerView recyclerview;
+    @BindView(R.id.tv_noPosts) TextView no_posts_view;
     private LoadAllEntriesAdapter mAdapter;
     private JournalEntryDatabase mDb;
     private JournalRepositoryImpl journalRepository;
@@ -53,7 +56,7 @@ public class EntryListActivity extends AppCompatActivity implements LoadAllEntri
     private static final String ENTRY_ID = "ENTRY_ID";
     private String email;
     private static final String USER_EMAIL = "usersEmail";
-
+    boolean checkRemote = true;
 
     SharedPreferences sharedpreferences;
     SharedPreferences.Editor editor;
@@ -103,24 +106,37 @@ public class EntryListActivity extends AppCompatActivity implements LoadAllEntri
         fabButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // Create a new intent to start an AddTaskActivity
                 Intent addTaskIntent = new Intent(EntryListActivity.this, AddEntryActivity.class);
                 startActivity(addTaskIntent);
             }
         });
     }
 
+
     private void setupViewModel() {
         ViewModelProvider.Factory allEntriesViewModelFactory = new AllEntriesViewModelFactory(journalRepository);
         entryListViewModel = ViewModelProviders.of(this, allEntriesViewModelFactory)
                 .get(EntryListViewModel.class);
         entryListViewModel.setView(this);
-        //gets all entries
+
+        if(checkRemote){
+            entryListViewModel.getEntriesRemotely(sharedpreferences.getString(Constants.EMAIL, ""));
+            checkRemote = false;
+        }
+
+    }
+
+    public void observeSwitchOn(){
         entryListViewModel.getEntries().observe(this, new Observer<List<JournalEntryEntity>>() {
             @Override
             public void onChanged(@Nullable List<JournalEntryEntity> journalEntryEntities) {
                 Log.d(TAG, "Updating list of tasks from LiveData in ViewModel");
-                mAdapter.setInfoCollection(journalEntryEntities);
+                if(!journalEntryEntities.isEmpty())
+                {
+                    mAdapter.setInfoCollection(journalEntryEntities);
+                    if((no_posts_view.getVisibility() == View.VISIBLE)){
+                        no_posts_view.setVisibility(View.GONE);
+                    }}
             }
         });
     }
@@ -174,4 +190,19 @@ public class EntryListActivity extends AppCompatActivity implements LoadAllEntri
     public void onUpdateSuccess(String status) {
         Toast.makeText(this, status, Toast.LENGTH_LONG).show();
     }
+
+    @Override
+    public void onEntriesLoaded(List<JournalEntryEntity> list) {
+        if(!list.isEmpty()){
+        mAdapter.setInfoCollection(list);
+        if((no_posts_view.getVisibility() == View.VISIBLE)){
+            no_posts_view.setVisibility(View.GONE);
+        }}
+        else{
+            no_posts_view.setVisibility(View.VISIBLE);
+        }
+
+        observeSwitchOn();
+    }
+
 }

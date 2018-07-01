@@ -4,8 +4,8 @@
     <!-- //error meesages!-->
     <string name="null_event">Event cannot be null</string>
 
-    <string name="save_post">Success, post saved!</string>
-    <string name="deleted_post">Success, post deleted!</string>
+    <string name="save_post">post saved</string>
+    <string name="deleted_post">post deleted</string>
 
     <!--meun options !-->
     <string name="update_post">update post</string>
@@ -14,10 +14,13 @@
     <string name="sign_out_press">please sign out to leave the app</string>
     <string name="backup_data">Backup data</string>
 
-    <string name="update_successfull">Update successful!</string>
+    <string name="update_successfull">post updated</string>
 
     <!--backup data path !-->
     <string name="path_to_posts">users/userInstance/entries/</string>
+    <string name="email">email</string>
+
+    <string name="no_posts">You have no posts</string>
 
 
 

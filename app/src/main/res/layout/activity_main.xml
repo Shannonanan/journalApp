@@ -18,6 +18,21 @@
 
         />
 
+    <TextView
+        android:id="@+id/tv_noPosts"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:text="@string/no_posts"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:textColor="@color/colorPrimaryDark"
+        android:visibility="gone"/>
+
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"

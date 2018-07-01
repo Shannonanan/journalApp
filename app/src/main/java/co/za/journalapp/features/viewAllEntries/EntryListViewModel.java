@@ -33,6 +33,20 @@ public class EntryListViewModel extends ViewModel {
         return journalRepository.getAllEntries();
     }
 
+    public void getEntriesRemotely(String email){
+        journalRepository.getEntriesRemotely(email, new JournalRepository.LoadEntriesCallback() {
+            @Override
+            public void onEntriesLoaded(List<JournalEntryEntity> list) {
+                allEntriesContract.onEntriesLoaded(list);
+            }
+
+            @Override
+            public void OnDataUnavailable(String error) {
+
+            }
+        });
+    }
+
     public void deleteEntryInRemote(JournalEntryEntity entity)
     {
         journalRepository.deleteEntry(entity, new JournalRepository.LoadInfoCallback() {

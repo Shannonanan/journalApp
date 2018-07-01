@@ -48,6 +48,11 @@ public class JournalEntryEntity {
         this.email = email;
     }
 
+    @Ignore
+    public JournalEntryEntity(){
+
+    }
+
 
     @Ignore
     public Map<String, Object> toMap() {

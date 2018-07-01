@@ -4,6 +4,7 @@ package co.za.journalapp.data;
 import android.arch.lifecycle.LiveData;
 import android.util.Log;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,6 +22,8 @@ public class JournalRepositoryImpl implements JournalRepository {
 
     private static JournalRepositoryImpl INSTANCE = null;
     private static String TAG = "uploads";
+    private static String TAG2 = "deleted";
+    private static String TAG3 = "allEntries";
 
     private final JournalRepository mLocalDataSource;
     private final JournalRepository mRemoteDataSource;
@@ -77,7 +80,6 @@ public class JournalRepositoryImpl implements JournalRepository {
         //CHECK HERE FOR INFO IN LOCAL IF SOMETHING ASK TO BACK UP TO CLOUD OR IF NOTHING PULL FROM CLOUD?
         // Query the local storage if available. If not, query the network.
         // Do in memory cache update to keep the app UI up to date
-
         return mLocalDataSource.getAllEntries();
 
     }
@@ -119,23 +121,53 @@ public class JournalRepositoryImpl implements JournalRepository {
                 mRemoteDataSource.deleteEntry(entry, new LoadInfoCallback() {
                     @Override
                     public void onDataLoaded(int success) {
+                        Log.d(TAG2, "successful deletion from remote and local");
                         callback.onDataLoaded(1);
                     }
 
                     @Override
                     public void onDataNotAvailable(String error) {
+                        Log.d(TAG2, error);
                         callback.onDataNotAvailable(error);
                     }
                 });
             }
-
             @Override
             public void onDataNotAvailable(String error) {
-
+                Log.d(TAG2, error);
+                callback.onDataNotAvailable(error);
             }
         });
 
     }
+
+    @Override
+    public void getEntriesRemotely(String email, final LoadEntriesCallback callback) {
+        mRemoteDataSource.getEntriesRemotely(email, new LoadEntriesCallback() {
+            @Override
+            public void onEntriesLoaded(List<JournalEntryEntity> list) {
+                saveToLocal(list, callback);
+
+            }
+
+            @Override
+            public void OnDataUnavailable(String error) {
+                callback.OnDataUnavailable(error);
+            }
+        });
+    }
+
+    @Override
+    public void saveBatchToLocal(List<JournalEntryEntity> list) {
+
+    }
+
+    public void  saveToLocal(List<JournalEntryEntity>list, LoadEntriesCallback callback){
+        mLocalDataSource.saveBatchToLocal(list);
+        Log.d(TAG3, "all entries retrieved from remote");
+        callback.onEntriesLoaded(list);
+    }
+
 
     /**
      * Returns the single instance of this class, creating it if necessary.

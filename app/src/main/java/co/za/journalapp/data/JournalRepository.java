@@ -18,6 +18,12 @@ public interface JournalRepository {
         void onDataNotAvailable(String error);
     }
 
+    interface LoadEntriesCallback{
+
+        void onEntriesLoaded(List<JournalEntryEntity> list);
+        void OnDataUnavailable(String error);
+    }
+
 
     void insertEntry(JournalEntryEntity event, String email, LoadInfoCallback callback);
 
@@ -28,6 +34,10 @@ public interface JournalRepository {
     void updateEntry(JournalEntryEntity entity, LoadInfoCallback callback);
 
     void deleteEntry(JournalEntryEntity entry, LoadInfoCallback callback);
+
+    void getEntriesRemotely(String email, LoadEntriesCallback callback);
+
+    void saveBatchToLocal(List<JournalEntryEntity>list);
 
 
 }
