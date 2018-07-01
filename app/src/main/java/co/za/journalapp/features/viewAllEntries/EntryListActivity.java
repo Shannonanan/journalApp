@@ -40,7 +40,7 @@ import co.za.journalapp.features.detail.DetailActivity;
 
 import static android.support.v7.widget.DividerItemDecoration.VERTICAL;
 
-public class EntryListActivity extends AppCompatActivity implements LoadAllEntriesAdapter.ItemClickListener {
+public class EntryListActivity extends AppCompatActivity implements LoadAllEntriesAdapter.ItemClickListener, AllEntriesContract {
 
     // Constant for logging
     private static final String TAG = EntryListActivity.class.getSimpleName();
@@ -84,8 +84,7 @@ public class EntryListActivity extends AppCompatActivity implements LoadAllEntri
                         int positionOfEntry = viewHolder.getAdapterPosition();
                         List<JournalEntryEntity>entries = mAdapter.getEntryCollection();
                         JournalEntryEntity entryEntity = entries.get(positionOfEntry);
-                        mDb.journalEntryDao().deleteTask(entryEntity);
-                        entryListViewModel.deleteEntryInRemote(entryEntity, email);
+                        entryListViewModel.deleteEntryInRemote(entryEntity);
                     }
                 });
 
@@ -115,6 +114,7 @@ public class EntryListActivity extends AppCompatActivity implements LoadAllEntri
         ViewModelProvider.Factory allEntriesViewModelFactory = new AllEntriesViewModelFactory(journalRepository);
         entryListViewModel = ViewModelProviders.of(this, allEntriesViewModelFactory)
                 .get(EntryListViewModel.class);
+        entryListViewModel.setView(this);
         //gets all entries
         entryListViewModel.getEntries().observe(this, new Observer<List<JournalEntryEntity>>() {
             @Override
@@ -168,5 +168,10 @@ public class EntryListActivity extends AppCompatActivity implements LoadAllEntri
     @Override
     public void onBackPressed() {
        Toast.makeText(this, getString(R.string.sign_out_press), Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void onUpdateSuccess(String status) {
+        Toast.makeText(this, status, Toast.LENGTH_LONG).show();
     }
 }

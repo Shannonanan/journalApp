@@ -19,16 +19,15 @@ public interface JournalRepository {
     }
 
 
-
     void insertEntry(JournalEntryEntity event, String email, LoadInfoCallback callback);
 
     LiveData<List<JournalEntryEntity>> getAllEntries();
 
     LiveData<JournalEntryEntity> getEntry(int id);
 
-    Completable updateEntry(JournalEntryEntity entity);
+    void updateEntry(JournalEntryEntity entity, LoadInfoCallback callback);
 
-    void deleteEntry(JournalEntryEntity entry, final String email);
+    void deleteEntry(JournalEntryEntity entry, LoadInfoCallback callback);
 
 
 }

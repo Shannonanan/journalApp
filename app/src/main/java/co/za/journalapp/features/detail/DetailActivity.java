@@ -1,6 +1,7 @@
 package co.za.journalapp.features.detail;
 
 
+import android.app.Activity;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProvider;
 import android.arch.lifecycle.ViewModelProviders;
@@ -8,8 +9,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -25,6 +30,8 @@ import butterknife.OnClick;
 import co.za.journalapp.AppExecutors;
 import co.za.journalapp.Constants;
 import co.za.journalapp.R;
+import co.za.journalapp.SnackbarMessage;
+import co.za.journalapp.SnackbarUtils;
 import co.za.journalapp.data.JournalRepositoryImpl;
 import co.za.journalapp.data.localRepository.JournalEntryDao;
 import co.za.journalapp.data.localRepository.JournalEntryDatabase;
@@ -33,7 +40,7 @@ import co.za.journalapp.data.localRepository.LocalDataSource;
 import co.za.journalapp.data.remoteRepository.RemoteDataSource;
 
 
-public class DetailActivity extends AppCompatActivity {
+public class DetailActivity extends AppCompatActivity implements DetailContract{
 
     private static final String ENTRY_ID = "ENTRY_ID";
     private DetailViewModel detailViewModel;
@@ -48,6 +55,7 @@ public class DetailActivity extends AppCompatActivity {
     @BindView(R.id.tv_date) TextView tv_date;
     @BindView(R.id.tv_entry) TextView tv_entry;
     @BindView(R.id.btn_update) Button btn_update;
+    @BindView(R.id.coordinatorLayout) CoordinatorLayout coordinatorLayout;
     private String email;
     SharedPreferences sharedpreferences;
 
@@ -58,6 +66,7 @@ public class DetailActivity extends AppCompatActivity {
         setContentView(R.layout.activity_detail);
 
         ButterKnife.bind(this);
+
         sharedpreferences = getApplicationContext().getSharedPreferences(Constants.MyPREFERENCES, Context.MODE_PRIVATE);
         mDb = JournalEntryDatabase.getInstance(getApplicationContext());
         JournalEntryDao journalEntryDao = mDb.journalEntryDao();
@@ -65,6 +74,7 @@ public class DetailActivity extends AppCompatActivity {
         RemoteDataSource remoteDataSource = new RemoteDataSource(AppExecutors.getInstance(), this);
         journalRepository = new JournalRepositoryImpl(localDataSource, remoteDataSource, mDb);
         setupViewModel();
+      //  setupSnackbar();
         email = sharedpreferences.getString(Constants.EMAIL, "");
 
     }
@@ -74,6 +84,7 @@ public class DetailActivity extends AppCompatActivity {
         ViewModelProvider.Factory addDetailViewModel = new DetailViewModelFactory(journalRepository);
         detailViewModel = ViewModelProviders.of(this, addDetailViewModel)
                 .get(DetailViewModel.class);
+        detailViewModel.setView(this);
         //gets entry by id
         detailViewModel.getEntry(entry_id).observe(this, new Observer<JournalEntryEntity>() {
             @Override
@@ -83,6 +94,15 @@ public class DetailActivity extends AppCompatActivity {
             }
         });
     }
+
+//    private void setupSnackbar() {
+//        detailViewModel.getSnackbarMessage().observe(this, new SnackbarMessage.SnackbarObserver() {
+//            @Override
+//            public void onNewMessage(@StringRes int snackbarMessageResourceId) {
+//                SnackbarUtils.showSnackbar(coordinatorLayout, getString(snackbarMessageResourceId));
+//            }
+//        });
+//    }
 
     private void populateUi(JournalEntryEntity journalEntryEntity) {
         //set date,time, entry
@@ -123,4 +143,12 @@ public class DetailActivity extends AppCompatActivity {
     }
 
 
+    @Override
+    public void onUpdateSuccess(String status) {
+//        Snackbar snackbar = Snackbar
+//                .make(coordinatorLayout, getString(R.string.update_successfull), Snackbar.LENGTH_LONG);
+//        snackbar.show();
+
+        Toast.makeText(this, getString(R.string.update_successfull), Toast.LENGTH_LONG).show();
+    }
 }

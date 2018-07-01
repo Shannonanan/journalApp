@@ -88,39 +88,54 @@ public class JournalRepositoryImpl implements JournalRepository {
     }
 
     @Override
-    public Completable updateEntry(final JournalEntryEntity entry) {
-        if (entry == null) {
-            return Completable.error(new IllegalArgumentException("Entry cannot be null"));
-        }
-
-        return Completable.fromAction(new Action() {
+    public void updateEntry(final JournalEntryEntity entry, final LoadInfoCallback callback) {
+        mLocalDataSource.updateEntry(entry, new LoadInfoCallback() {
             @Override
-            public void run() throws Exception {
-                mDb.journalEntryDao().updateEntry(entry);
+            public void onDataLoaded(int uniqueId) {
+                mRemoteDataSource.updateEntry(entry, new LoadInfoCallback() {
+                    @Override
+                    public void onDataLoaded(int success) {
+                        callback.onDataLoaded(success);
+                        Log.d(TAG, "successful upload");
+                    }
+
+                    @Override
+                    public void onDataNotAvailable(String error) {
+                        Log.d(TAG, "failed upload");
+                    }
+                });
+            }
+            @Override
+            public void onDataNotAvailable(String error) {
             }
         });
     }
 
     @Override
-    public void deleteEntry(JournalEntryEntity entry, String email) {
-        mRemoteDataSource.deleteEntry(entry, email);
+    public void deleteEntry(final JournalEntryEntity entry, final LoadInfoCallback callback) {
+        mLocalDataSource.deleteEntry(entry, new LoadInfoCallback() {
+            @Override
+            public void onDataLoaded(int success) {
+                mRemoteDataSource.deleteEntry(entry, new LoadInfoCallback() {
+                    @Override
+                    public void onDataLoaded(int success) {
+                        callback.onDataLoaded(1);
+                    }
+
+                    @Override
+                    public void onDataNotAvailable(String error) {
+                        callback.onDataNotAvailable(error);
+                    }
+                });
+            }
+
+            @Override
+            public void onDataNotAvailable(String error) {
+
+            }
+        });
+
     }
-
-
-
-
-//    @Override
-//    public Completable deleteEntry(final JournalEntryEntity entry) {
-//       return Completable.fromAction(new Action() {
-//           @Override
-//           public void run() throws Exception {
-//               mLocalDataSource.deleteEntry(entry);
-//               mCachedInfo.clear();
-//           }
-//       });
-
-
-//}
 
     /**
      * Returns the single instance of this class, creating it if necessary.

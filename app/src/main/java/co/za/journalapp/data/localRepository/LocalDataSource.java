@@ -23,16 +23,6 @@ public class LocalDataSource implements JournalRepository {
 
     @Override
     public void insertEntry(final JournalEntryEntity entry, String email, final LoadInfoCallback callback) {
-//        if(event == null) {
-//            return Completable.error(new IllegalArgumentException("Event cannot be null"));
-//        }
-//       return Completable.fromAction(new Action() {
-//           @Override
-//           public void run() throws Exception {
-//
-//               String test = "hello";
-//           }
-//       });
         checkNotNull(entry);
         Runnable saveRunnable = new Runnable() {
             @Override
@@ -57,23 +47,33 @@ public class LocalDataSource implements JournalRepository {
     }
 
     @Override
-    public Completable updateEntry(JournalEntryEntity entity) {
-        return null;
+    public void updateEntry(final JournalEntryEntity entry, final LoadInfoCallback callback) {
+        checkNotNull(entry);
+        Runnable saveRunnable =  new Runnable() {
+            @Override
+            public void run() {
+                int success = 1;
+                journalEntryDao.updateEntry(entry);
+                callback.onDataLoaded(success);
+            }
+        };
+        mExecutors.diskIO().execute(saveRunnable);
     }
+
 
     @Override
-    public void deleteEntry(JournalEntryEntity entry, String email) {
-
+    public void deleteEntry(final JournalEntryEntity entry, final LoadInfoCallback callback) {
+        checkNotNull(entry);
+        Runnable saveRunnable = new Runnable() {
+            @Override
+            public void run() {
+                int success = 1;
+                journalEntryDao.deleteTask(entry);
+                callback.onDataLoaded(success);
+            }
+        };
+        mExecutors.diskIO().execute(saveRunnable);
     }
 
 
-//    @Override
-//    public Completable deleteEntry(final JournalEntryEntity entry) {
-//        return Completable.fromAction(new Action() {
-//            @Override
-//            public void run() throws Exception {
-//                journalEntryDao.deleteTask(entry);
-//            }
-//        });
-//    }
 }

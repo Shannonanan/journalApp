@@ -15,17 +15,14 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
+
 
 import co.za.journalapp.AppExecutors;
 import co.za.journalapp.R;
 import co.za.journalapp.data.JournalRepository;
 import co.za.journalapp.data.localRepository.JournalEntryEntity;
 import co.za.journalapp.data.localRepository.JournalEntrySchema;
-import io.reactivex.Completable;
-import io.reactivex.Observable;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -37,6 +34,7 @@ public class RemoteDataSource implements JournalRepository {
     private final AppExecutors mExecutors;
     Context mContext;
     String postToDelete = "";
+    String postToUpdate = "";
 
 
     public RemoteDataSource(AppExecutors mExecutors, Context context) {
@@ -82,14 +80,53 @@ public class RemoteDataSource implements JournalRepository {
     }
 
     @Override
-    public Completable updateEntry(JournalEntryEntity entity) {
-        return null;
+    public void updateEntry(final JournalEntryEntity entry, final LoadInfoCallback callback) {
+        checkNotNull(entry);
+        Runnable saveRunnable = new Runnable() {
+            @Override
+            public void run() {
+
+                Query query = db.collection(mContext.getString(R.string.path_to_posts));
+                query.get()
+                        .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                            @Override
+                            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                                for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
+                                    JournalEntrySchema journalEntrySchema = documentSnapshot.toObject(JournalEntrySchema.class);
+                                    if(journalEntrySchema.getId() == entry.getId()){
+                                        postToUpdate = documentSnapshot.getId();
+                                        break;
+                                    } }
+
+                                db.document(mContext.getString(R.string.path_to_posts) + postToUpdate)
+                                        .update(entry.toMap())
+                                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                            @Override
+                                            public void onSuccess(Void aVoid) {
+                                                callback.onDataLoaded(1);
+                                            }
+                                        }).addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        callback.onDataLoaded(0);
+                                    }
+                                });
+                            }
+                        }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+
+                    }
+                });
+            }
+        };
+        mExecutors.networkIO().execute(saveRunnable);
     }
 
-    @Override
-    public void deleteEntry(final JournalEntryEntity entryToDelete, final String email) {
-        checkNotNull(entryToDelete);
 
+    @Override
+    public void deleteEntry(final JournalEntryEntity entryToDelete, final LoadInfoCallback callback) {
+        checkNotNull(entryToDelete);
         Runnable saveRunnable = new Runnable() {
             @Override
             public void run() {
@@ -112,12 +149,12 @@ public class RemoteDataSource implements JournalRepository {
                                         .addOnSuccessListener(new OnSuccessListener<Void>() {
                                             @Override
                                             public void onSuccess(Void aVoid) {
-
+                                            callback.onDataLoaded(1);
                                             }
                                         }).addOnFailureListener(new OnFailureListener() {
                                     @Override
                                     public void onFailure(@NonNull Exception e) {
-
+                                            callback.onDataNotAvailable(e.getMessage());
                                     }
                                 });
                             }

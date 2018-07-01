@@ -14,6 +14,8 @@
     <string name="sign_out_press">please sign out to leave the app</string>
     <string name="backup_data">Backup data</string>
 
+    <string name="update_successfull">Update successful!</string>
+
     <!--backup data path !-->
     <string name="path_to_posts">users/userInstance/entries/</string>
 
