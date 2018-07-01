@@ -21,6 +21,7 @@ public class AllEntriesViewModelFactory extends ViewModelProvider.NewInstanceFac
         this.journalRepository = journalRepository;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <T extends ViewModel> T create(Class<T> modelClass) {
         //noinspection unchecked

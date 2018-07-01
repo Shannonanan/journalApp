@@ -15,6 +15,7 @@ public class DetailViewModelFactory extends ViewModelProvider.NewInstanceFactory
         this.journalRepository = journalRepository;
     }
 
+    @SuppressWarnings("unchecked")
     @NonNull
     @Override
     public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {

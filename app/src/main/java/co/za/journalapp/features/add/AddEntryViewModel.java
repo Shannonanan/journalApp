@@ -36,25 +36,8 @@ public class AddEntryViewModel extends ViewModel{
         this.writtenEntry = writtenEntry;
     }
 
-    public void addEntry(JournalEntryEntity entry){
-        journalRepository.insertEntry(entry).observeOn(AndroidSchedulers.mainThread())
-                .subscribeOn(Schedulers.io())
-                .subscribe(new CompletableObserver() {
-                    @Override
-                    public void onSubscribe(Disposable d) {
-
-                    }
-
-                    @Override
-                    public void onComplete() {
-                        Timber.d("onComplete - successfully added event");
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        Timber.d(e, "onError - add:");
-                    }
-                });
+    public void addEntry(JournalEntryEntity entry, String email){
+        journalRepository.insertEntry(entry, email);
     }
 }
 

@@ -7,9 +7,11 @@ import android.arch.persistence.room.Index;
 import android.arch.persistence.room.PrimaryKey;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import static co.za.journalapp.data.localRepository.JournalEntryEntity.TABLE_NAME;
-//indices = {@Index(value = {"id"}, unique = true
+
 
 
 @Entity(tableName = TABLE_NAME)
@@ -23,22 +25,35 @@ public class JournalEntryEntity {
     private String date;
     private String time;
     private String writtenEntry;
+    private String email;
 
     @Ignore
     public JournalEntryEntity(String date, String time,
-                                String writtenEntry) {
+                                String writtenEntry,String email) {
         this.date = date;
         this.time = time;
         this.writtenEntry = writtenEntry;
+        this.email = email;
     }
 
     public JournalEntryEntity(int id, String date,
                                 String time,
-                                String writtenEntry) {
+                                String writtenEntry, String email) {
         this.id = id;
         this.date = date;
         this.time = time;
         this.writtenEntry = writtenEntry;
+        this.email = email;
+    }
+
+    @Ignore
+    public Map<String, Object> toMap() {
+        HashMap<String, Object> result = new HashMap<>();
+        result.put("date", date);
+        result.put("time", time);
+        result.put("entry", writtenEntry);
+        result.put("email", email);
+        return result;
     }
 
 
@@ -73,5 +88,13 @@ public class JournalEntryEntity {
 
     public void setWrittenEntry(String writtenEntry) {
         this.writtenEntry = writtenEntry;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 }

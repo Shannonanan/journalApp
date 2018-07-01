@@ -6,6 +6,7 @@ import java.util.List;
 
 import co.za.journalapp.data.localRepository.JournalEntryEntity;
 import io.reactivex.Completable;
+import io.reactivex.Observable;
 
 public interface JournalRepository {
 
@@ -18,8 +19,8 @@ public interface JournalRepository {
     }
 
 
-    //completeable is only indication of completion or exception
-    Completable insertEntry(JournalEntryEntity event);
+
+    void insertEntry(JournalEntryEntity event, String email);
 
     LiveData<List<JournalEntryEntity>> getAllEntries();
 

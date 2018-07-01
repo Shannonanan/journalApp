@@ -11,6 +11,7 @@ import java.util.Map;
 import co.za.journalapp.data.localRepository.JournalEntryDatabase;
 import co.za.journalapp.data.localRepository.JournalEntryEntity;
 import io.reactivex.Completable;
+import io.reactivex.Observable;
 import io.reactivex.functions.Action;
 
 
@@ -18,11 +19,17 @@ public class JournalRepositoryImpl implements JournalRepository {
 
     private static JournalRepositoryImpl INSTANCE = null;
 
-    // private final RemoteDataSource mRemoteDataSource;
     private final JournalRepository mLocalDataSource;
+    private final JournalRepository mRemoteDataSource;
     private JournalEntryDatabase mDb;
-    private LiveData<List<JournalEntryEntity>> entries;
     public Map<Object, JournalEntryEntity> mCachedInfo;
+
+    public JournalRepositoryImpl(JournalRepository mLocalDataSource, JournalRepository mRemoteDataSource,
+                                 JournalEntryDatabase mDb) {
+        this.mLocalDataSource = mLocalDataSource;
+        this.mRemoteDataSource = mRemoteDataSource;
+        this.mDb = mDb;
+    }
 
     /**
      * Marks the cache as invalid, to force an update the next time data is requested. This variable
@@ -30,34 +37,29 @@ public class JournalRepositoryImpl implements JournalRepository {
      */
     private boolean mCacheIsDirty = false;
 
-//    public JournalRepositoryImpl(JournalRepository mLocalDataSource) {
-//        this.mLocalDataSource = mLocalDataSource;
-//    }
-
-    public JournalRepositoryImpl(JournalRepository mLocalDataSource, JournalEntryDatabase mDb) {
-        this.mLocalDataSource = mLocalDataSource;
-        this.mDb = mDb;
-    }
-
 
     @Override
-    public Completable insertEntry(final JournalEntryEntity entry) {
+    public void insertEntry(final JournalEntryEntity entry, String email) {
 
-        if (entry == null) {
-            return Completable.error(new IllegalArgumentException("Event cannot be null"));
-        }
+        mLocalDataSource.insertEntry(entry, email);
+        mRemoteDataSource.insertEntry(entry, email);
+//        if (entry == null) {
+//            return Completable.error(new IllegalArgumentException("Event cannot be null"));
+//        }
         // Do in memory cache update to keep the app UI up to date
         if (mCachedInfo == null) {
             mCachedInfo = new LinkedHashMap<>();
         }
-        return Completable.fromAction(new Action() {
-            @Override
-            public void run() throws Exception {
-              //    mLocalDataSource.insertEntry(entry);
-                mDb.journalEntryDao().insertEntry(entry);
-                mCachedInfo.put(entry.getId(), entry);
-            }
-        });
+
+        mCachedInfo.put(entry.getId(), entry);
+//        return Completable.fromAction(new Action() {
+//            @Override
+//            public void run() throws Exception {
+//
+//                mDb.journalEntryDao().insertEntry(entry);
+//                mCachedInfo.put(entry.getId(), entry);
+//            }
+//        });
 
     }
 
@@ -81,10 +83,7 @@ public class JournalRepositoryImpl implements JournalRepository {
         if (entry == null) {
             return Completable.error(new IllegalArgumentException("Entry cannot be null"));
         }
-        // Do in memory cache update to keep the app UI up to date
-        if (mCachedInfo == null) {
-            mCachedInfo = new LinkedHashMap<>();
-        }
+
         return Completable.fromAction(new Action() {
             @Override
             public void run() throws Exception {
@@ -114,9 +113,9 @@ public class JournalRepositoryImpl implements JournalRepository {
      * @param localDataSource the device storage data source
      * @return the {@link JournalRepositoryImpl} instance
      */
-    public static JournalRepositoryImpl getInstance(JournalRepository localDataSource, JournalEntryDatabase mDb) {
+    public static JournalRepositoryImpl getInstance(JournalRepository localDataSource, JournalRepository remoteDataSource, JournalEntryDatabase mDb) {
         if (INSTANCE == null) {
-            INSTANCE = new JournalRepositoryImpl(localDataSource, mDb);
+            INSTANCE = new JournalRepositoryImpl(localDataSource,remoteDataSource, mDb);
         }
         return INSTANCE;
     }

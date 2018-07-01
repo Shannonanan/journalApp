@@ -1,14 +1,13 @@
 package co.za.journalapp.data.localRepository;
 
 import android.arch.lifecycle.LiveData;
-
-import java.util.Date;
 import java.util.List;
-
 import co.za.journalapp.AppExecutors;
 import co.za.journalapp.data.JournalRepository;
 import io.reactivex.Completable;
-import io.reactivex.functions.Action;
+
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 public class LocalDataSource implements JournalRepository {
 
@@ -22,17 +21,25 @@ public class LocalDataSource implements JournalRepository {
 
 
     @Override
-    public Completable insertEntry(final JournalEntryEntity event) {
-        if(event == null) {
-            return Completable.error(new IllegalArgumentException("Event cannot be null"));
-        }
-       return Completable.fromAction(new Action() {
-           @Override
-           public void run() throws Exception {
-               journalEntryDao.insertEntry(event);
-               String test = "hello";
-           }
-       });
+    public void insertEntry(final JournalEntryEntity entry, String email) {
+//        if(event == null) {
+//            return Completable.error(new IllegalArgumentException("Event cannot be null"));
+//        }
+//       return Completable.fromAction(new Action() {
+//           @Override
+//           public void run() throws Exception {
+//
+//               String test = "hello";
+//           }
+//       });
+        checkNotNull(entry);
+        Runnable saveRunnable = new Runnable() {
+            @Override
+            public void run() {
+                journalEntryDao.insertEntry(entry);
+            }
+        };
+        mExecutors.diskIO().execute(saveRunnable);
 
     }
 

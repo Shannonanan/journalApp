@@ -3,6 +3,8 @@ package co.za.journalapp.features.add;
 import android.arch.lifecycle.ViewModelProvider;
 import android.arch.lifecycle.ViewModelProviders;
 import android.arch.persistence.room.RoomDatabase;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
@@ -22,12 +24,15 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import co.za.journalapp.AppExecutors;
+import co.za.journalapp.Constants;
 import co.za.journalapp.R;
 import co.za.journalapp.data.JournalRepositoryImpl;
 import co.za.journalapp.data.localRepository.JournalEntryDao;
 import co.za.journalapp.data.localRepository.JournalEntryDatabase;
 import co.za.journalapp.data.localRepository.JournalEntryEntity;
 import co.za.journalapp.data.localRepository.LocalDataSource;
+import co.za.journalapp.data.remoteRepository.RemoteDataSource;
+
 
 public class AddEntryActivity extends AppCompatActivity {
 
@@ -41,7 +46,9 @@ public class AddEntryActivity extends AppCompatActivity {
     private AddEntryViewModel addEntryViewModel;
     private JournalEntryDatabase mDb;
     private JournalRepositoryImpl journalRepository;
-    private LocalDataSource localDataSource;
+
+    private String email;
+    SharedPreferences sharedpreferences;
 
 
     private int mTaskId = DEFAULT_TASK_ID;
@@ -52,14 +59,16 @@ public class AddEntryActivity extends AppCompatActivity {
         setContentView(R.layout.activity_add_entry);
 
         ButterKnife.bind(this);
-
+        sharedpreferences = getApplicationContext().getSharedPreferences(Constants.MyPREFERENCES, Context.MODE_PRIVATE);
         mDb = JournalEntryDatabase.getInstance(getApplicationContext());
         JournalEntryDao journalEntryDao = mDb.journalEntryDao();
-        localDataSource = new LocalDataSource(journalEntryDao, AppExecutors.getInstance());
-        journalRepository = new JournalRepositoryImpl(localDataSource, mDb);
+        LocalDataSource localDataSource = new LocalDataSource(journalEntryDao, AppExecutors.getInstance());
+        RemoteDataSource remoteDataSource = new RemoteDataSource(AppExecutors.getInstance());
+        journalRepository = new JournalRepositoryImpl(localDataSource, remoteDataSource, mDb);
 
         setupClickListeners();
         setupViewModel();
+        email = sharedpreferences.getString(Constants.EMAIL, "");
     }
 
 
@@ -96,8 +105,8 @@ public class AddEntryActivity extends AppCompatActivity {
     @OnClick(R.id.btn_post)
     public  void postEntry()
     {
-        final JournalEntryEntity task = new JournalEntryEntity(getCurrentDate(), getCurrentTime(), et_entry.getText().toString());
-        addEntryViewModel.addEntry(task);
+        final JournalEntryEntity entry = new JournalEntryEntity(getCurrentDate(), getCurrentTime(), et_entry.getText().toString(), email);
+        addEntryViewModel.addEntry(entry, email);
         Toast.makeText(this, getString(R.string.save_post), Toast.LENGTH_LONG).show();
         finish();
 

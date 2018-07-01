@@ -3,7 +3,9 @@ package co.za.journalapp.features.viewAllEntries;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProvider;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -24,6 +26,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import co.za.journalapp.AppExecutors;
+import co.za.journalapp.Constants;
 import co.za.journalapp.R;
 import co.za.journalapp.authentication.GoogleSignInActivity;
 import co.za.journalapp.data.JournalRepositoryImpl;
@@ -31,6 +34,7 @@ import co.za.journalapp.data.localRepository.JournalEntryDao;
 import co.za.journalapp.data.localRepository.JournalEntryDatabase;
 import co.za.journalapp.data.localRepository.JournalEntryEntity;
 import co.za.journalapp.data.localRepository.LocalDataSource;
+import co.za.journalapp.data.remoteRepository.RemoteDataSource;
 import co.za.journalapp.features.add.AddEntryActivity;
 import co.za.journalapp.features.detail.DetailActivity;
 
@@ -45,9 +49,14 @@ public class EntryListActivity extends AppCompatActivity implements LoadAllEntri
     private LoadAllEntriesAdapter mAdapter;
     private JournalEntryDatabase mDb;
     private JournalRepositoryImpl journalRepository;
-    private LocalDataSource localDataSource;
     private EntryListViewModel entryListViewModel;
     private static final String ENTRY_ID = "ENTRY_ID";
+    private String email;
+    private static final String USER_EMAIL = "usersEmail";
+
+
+    SharedPreferences sharedpreferences;
+    SharedPreferences.Editor editor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +67,8 @@ public class EntryListActivity extends AppCompatActivity implements LoadAllEntri
         setupRecyclerView();
         setupFab();
 
+
+          sharedpreferences = getApplicationContext().getSharedPreferences(Constants.MyPREFERENCES, Context.MODE_PRIVATE);
 
         new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
             @Override
@@ -81,8 +92,9 @@ public class EntryListActivity extends AppCompatActivity implements LoadAllEntri
 
         mDb = JournalEntryDatabase.getInstance(getApplicationContext());
         JournalEntryDao journalEntryDao = mDb.journalEntryDao();
-        localDataSource = new LocalDataSource(journalEntryDao, AppExecutors.getInstance());
-        journalRepository = new JournalRepositoryImpl(localDataSource, mDb);
+        LocalDataSource localDataSource = new LocalDataSource(journalEntryDao, AppExecutors.getInstance());
+        RemoteDataSource remoteDataSource = new RemoteDataSource(AppExecutors.getInstance());
+        journalRepository = new JournalRepositoryImpl(localDataSource, remoteDataSource, mDb);
         setupViewModel();
     }
 
@@ -136,10 +148,18 @@ public class EntryListActivity extends AppCompatActivity implements LoadAllEntri
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int menuItemThatWasSelected = item.getItemId();
-        if(menuItemThatWasSelected == R.id.menu_sign_out) {
-            GoogleSignInActivity.signOutFromMain();
-            finish();
+        switch (menuItemThatWasSelected) {
+            case R.id.menu_sign_out:
+                GoogleSignInActivity.signOutFromMain();
+                finish();
+                break;
+            case R.id.menu_settings:
+                //go to preference frag
+                break;
+            default:
+                break;
         }
+
         return true;
     }
 

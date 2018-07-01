@@ -19,7 +19,7 @@ public class AddEntryViewModelFactory extends ViewModelProvider.NewInstanceFacto
         this.mEntryId = mEntryId;
     }
 
-
+    @SuppressWarnings("unchecked")
     @NonNull
     @Override
     public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
