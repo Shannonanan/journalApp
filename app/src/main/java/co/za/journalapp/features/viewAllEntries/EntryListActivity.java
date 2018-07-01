@@ -19,8 +19,11 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.airbnb.lottie.LottieAnimationView;
 
 import java.util.List;
 
@@ -49,6 +52,8 @@ public class EntryListActivity extends AppCompatActivity implements LoadAllEntri
     @BindView(R.id.fab) FloatingActionButton fabButton;
     @BindView(R.id.recyclerview_Entries) RecyclerView recyclerview;
     @BindView(R.id.tv_noPosts) TextView no_posts_view;
+    @BindView(R.id.rl_progress_lottie) RelativeLayout rl_progress;
+    @BindView(R.id.animation_view) LottieAnimationView pb_progress;
     private LoadAllEntriesAdapter mAdapter;
     private JournalEntryDatabase mDb;
     private JournalRepositoryImpl journalRepository;
@@ -120,6 +125,7 @@ public class EntryListActivity extends AppCompatActivity implements LoadAllEntri
         entryListViewModel.setView(this);
 
         if(checkRemote){
+            showLoading();
             entryListViewModel.getEntriesRemotely(sharedpreferences.getString(Constants.EMAIL, ""));
             checkRemote = false;
         }
@@ -145,7 +151,6 @@ public class EntryListActivity extends AppCompatActivity implements LoadAllEntri
         recyclerview.setLayoutManager(new LinearLayoutManager(this));
         mAdapter = new LoadAllEntriesAdapter(this,this);
         recyclerview.setAdapter(mAdapter);
-
         DividerItemDecoration decoration = new DividerItemDecoration(getApplicationContext(), VERTICAL);
         recyclerview.addItemDecoration(decoration);
     }
@@ -193,6 +198,7 @@ public class EntryListActivity extends AppCompatActivity implements LoadAllEntri
 
     @Override
     public void onEntriesLoaded(List<JournalEntryEntity> list) {
+        hideLoading();
         if(!list.isEmpty()){
         mAdapter.setInfoCollection(list);
         if((no_posts_view.getVisibility() == View.VISIBLE)){
@@ -205,4 +211,15 @@ public class EntryListActivity extends AppCompatActivity implements LoadAllEntri
         observeSwitchOn();
     }
 
+
+    public void showLoading() {
+        this.rl_progress.setVisibility(View.VISIBLE);
+    }
+
+
+    public void hideLoading() {
+        if (rl_progress != null) {
+            this.rl_progress.setVisibility(View.GONE);
+        }
+    }
 }

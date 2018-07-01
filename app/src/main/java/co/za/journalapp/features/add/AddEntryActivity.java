@@ -9,10 +9,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.airbnb.lottie.LottieAnimationView;
 
 import org.joda.time.DateTime;
 
@@ -41,6 +45,8 @@ public class AddEntryActivity extends AppCompatActivity {
     @BindView(R.id.et_entry)EditText et_entry;
     @BindView(R.id.tv_date)TextView tv_date;
     @BindView(R.id.tv_time) TextView tv_time;
+    @BindView(R.id.rl_progress_lottie) RelativeLayout rl_progress;
+    @BindView(R.id.animation_view) LottieAnimationView pb_progress;
 
 
     private AddEntryViewModel addEntryViewModel;
@@ -56,7 +62,7 @@ public class AddEntryActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_add_entry);
+        setContentView(R.layout.activity_add);
 
         ButterKnife.bind(this);
         sharedpreferences = getApplicationContext().getSharedPreferences(Constants.MyPREFERENCES, Context.MODE_PRIVATE);
@@ -156,5 +162,16 @@ public class AddEntryActivity extends AppCompatActivity {
 
         else{
             return hoursInDay + ":" + minInDay;}
+    }
+
+    public void showLoading() {
+        this.rl_progress.setVisibility(View.VISIBLE);
+    }
+
+
+    public void hideLoading() {
+        if (rl_progress != null) {
+            this.rl_progress.setVisibility(View.GONE);
+        }
     }
 }

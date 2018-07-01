@@ -7,6 +7,10 @@
     android:background="@color/paperColour"
     tools:context=".features.viewAllEntries.EntryListActivity">
 
+    <include
+        layout="@layout/view_progress_lottie"
+        />
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recyclerview_Entries"
         android:layout_width="match_parent"

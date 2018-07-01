@@ -20,9 +20,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewSwitcher;
+
+import com.airbnb.lottie.LottieAnimationView;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -56,6 +59,8 @@ public class DetailActivity extends AppCompatActivity implements DetailContract{
     @BindView(R.id.tv_entry) TextView tv_entry;
     @BindView(R.id.btn_update) Button btn_update;
     @BindView(R.id.coordinatorLayout) CoordinatorLayout coordinatorLayout;
+    @BindView(R.id.rl_progress_lottie) RelativeLayout rl_progress;
+    @BindView(R.id.animation_view) LottieAnimationView pb_progress;
     private String email;
     SharedPreferences sharedpreferences;
 
@@ -136,6 +141,7 @@ public class DetailActivity extends AppCompatActivity implements DetailContract{
 
     @OnClick(R.id.btn_update)
     public  void updatetEntry(){
+        showLoading();
         JournalEntryEntity updateJournalEntryEntity = new JournalEntryEntity(mJournalEntryEntity.getId(), mJournalEntryEntity.getDate(),
         mJournalEntryEntity.getTime(), editEntry.getText().toString(), email);
         detailViewModel.updateEntry(updateJournalEntryEntity);
@@ -149,6 +155,18 @@ public class DetailActivity extends AppCompatActivity implements DetailContract{
 //                .make(coordinatorLayout, getString(R.string.update_successfull), Snackbar.LENGTH_LONG);
 //        snackbar.show();
 
+        hideLoading();
         Toast.makeText(this, getString(R.string.update_successfull), Toast.LENGTH_LONG).show();
+    }
+
+    public void showLoading() {
+        this.rl_progress.setVisibility(View.VISIBLE);
+    }
+
+
+    public void hideLoading() {
+        if (rl_progress != null) {
+            this.rl_progress.setVisibility(View.GONE);
+        }
     }
 }
