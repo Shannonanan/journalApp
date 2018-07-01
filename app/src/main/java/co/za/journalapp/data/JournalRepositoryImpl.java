@@ -2,6 +2,7 @@ package co.za.journalapp.data;
 
 
 import android.arch.lifecycle.LiveData;
+import android.util.Log;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -10,6 +11,7 @@ import java.util.Map;
 
 import co.za.journalapp.data.localRepository.JournalEntryDatabase;
 import co.za.journalapp.data.localRepository.JournalEntryEntity;
+import co.za.journalapp.data.localRepository.LocalDataSource;
 import io.reactivex.Completable;
 import io.reactivex.Observable;
 import io.reactivex.functions.Action;
@@ -18,6 +20,7 @@ import io.reactivex.functions.Action;
 public class JournalRepositoryImpl implements JournalRepository {
 
     private static JournalRepositoryImpl INSTANCE = null;
+    private static String TAG = "uploads";
 
     private final JournalRepository mLocalDataSource;
     private final JournalRepository mRemoteDataSource;
@@ -39,28 +42,34 @@ public class JournalRepositoryImpl implements JournalRepository {
 
 
     @Override
-    public void insertEntry(final JournalEntryEntity entry, String email) {
+    public void insertEntry(final JournalEntryEntity entry, final String email, LoadInfoCallback callback) {
+        mLocalDataSource.insertEntry(entry, email, new LoadInfoCallback() {
+            @Override
+            public void onDataLoaded(int uniqueId) {
+                entry.setId(uniqueId);
+                mRemoteDataSource.insertEntry(entry, email, new LoadInfoCallback() {
+                    @Override
+                    public void onDataLoaded(int success) {
+                        Log.d(TAG, "successful upload");
+                    }
 
-        mLocalDataSource.insertEntry(entry, email);
-        mRemoteDataSource.insertEntry(entry, email);
-//        if (entry == null) {
-//            return Completable.error(new IllegalArgumentException("Event cannot be null"));
-//        }
-        // Do in memory cache update to keep the app UI up to date
+                    @Override
+                    public void onDataNotAvailable(String error) {
+                        Log.d(TAG, "failed upload");
+                    }
+                });
+            }
+            @Override
+            public void onDataNotAvailable(String error) {
+
+            }
+        });
+
         if (mCachedInfo == null) {
             mCachedInfo = new LinkedHashMap<>();
         }
 
         mCachedInfo.put(entry.getId(), entry);
-//        return Completable.fromAction(new Action() {
-//            @Override
-//            public void run() throws Exception {
-//
-//                mDb.journalEntryDao().insertEntry(entry);
-//                mCachedInfo.put(entry.getId(), entry);
-//            }
-//        });
-
     }
 
     @Override
@@ -91,6 +100,13 @@ public class JournalRepositoryImpl implements JournalRepository {
             }
         });
     }
+
+    @Override
+    public void deleteEntry(JournalEntryEntity entry, String email) {
+        mRemoteDataSource.deleteEntry(entry, email);
+    }
+
+
 
 
 //    @Override

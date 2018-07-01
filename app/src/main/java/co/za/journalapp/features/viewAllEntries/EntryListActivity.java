@@ -83,7 +83,9 @@ public class EntryListActivity extends AppCompatActivity implements LoadAllEntri
                     public void run() {
                         int positionOfEntry = viewHolder.getAdapterPosition();
                         List<JournalEntryEntity>entries = mAdapter.getEntryCollection();
-                        mDb.journalEntryDao().deleteTask(entries.get(positionOfEntry));
+                        JournalEntryEntity entryEntity = entries.get(positionOfEntry);
+                        mDb.journalEntryDao().deleteTask(entryEntity);
+                        entryListViewModel.deleteEntryInRemote(entryEntity, email);
                     }
                 });
 

@@ -49,6 +49,7 @@ public class JournalEntryEntity {
     @Ignore
     public Map<String, Object> toMap() {
         HashMap<String, Object> result = new HashMap<>();
+        result.put("id", id);
         result.put("date", date);
         result.put("time", time);
         result.put("entry", writtenEntry);

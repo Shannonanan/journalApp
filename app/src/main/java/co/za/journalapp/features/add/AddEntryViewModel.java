@@ -6,6 +6,7 @@ import android.widget.Toast;
 
 import javax.inject.Inject;
 
+import co.za.journalapp.data.JournalRepository;
 import co.za.journalapp.data.JournalRepositoryImpl;
 import co.za.journalapp.data.localRepository.JournalEntryDatabase;
 import co.za.journalapp.data.localRepository.JournalEntryEntity;
@@ -37,7 +38,17 @@ public class AddEntryViewModel extends ViewModel{
     }
 
     public void addEntry(JournalEntryEntity entry, String email){
-        journalRepository.insertEntry(entry, email);
+        journalRepository.insertEntry(entry, email, new JournalRepository.LoadInfoCallback() {
+            @Override
+            public void onDataLoaded(int success) {
+
+            }
+
+            @Override
+            public void onDataNotAvailable(String error) {
+
+            }
+        });
     }
 }
 

@@ -14,6 +14,7 @@ public class LocalDataSource implements JournalRepository {
     private final JournalEntryDao journalEntryDao;
     private final AppExecutors mExecutors;
 
+
     public LocalDataSource(JournalEntryDao journalEntryDao, AppExecutors mExecutors) {
         this.journalEntryDao = journalEntryDao;
         this.mExecutors = mExecutors;
@@ -21,7 +22,7 @@ public class LocalDataSource implements JournalRepository {
 
 
     @Override
-    public void insertEntry(final JournalEntryEntity entry, String email) {
+    public void insertEntry(final JournalEntryEntity entry, String email, final LoadInfoCallback callback) {
 //        if(event == null) {
 //            return Completable.error(new IllegalArgumentException("Event cannot be null"));
 //        }
@@ -36,7 +37,9 @@ public class LocalDataSource implements JournalRepository {
         Runnable saveRunnable = new Runnable() {
             @Override
             public void run() {
-                journalEntryDao.insertEntry(entry);
+                long getIndex =  journalEntryDao.insertEntry(entry);
+                int i = (int) getIndex;
+                callback.onDataLoaded(i);
             }
         };
         mExecutors.diskIO().execute(saveRunnable);
@@ -56,6 +59,11 @@ public class LocalDataSource implements JournalRepository {
     @Override
     public Completable updateEntry(JournalEntryEntity entity) {
         return null;
+    }
+
+    @Override
+    public void deleteEntry(JournalEntryEntity entry, String email) {
+
     }
 
 

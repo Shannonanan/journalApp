@@ -13,14 +13,14 @@ public interface JournalRepository {
 
     interface LoadInfoCallback {
 
-        void onDataLoaded(String success);
+        void onDataLoaded(int success);
 
         void onDataNotAvailable(String error);
     }
 
 
 
-    void insertEntry(JournalEntryEntity event, String email);
+    void insertEntry(JournalEntryEntity event, String email, LoadInfoCallback callback);
 
     LiveData<List<JournalEntryEntity>> getAllEntries();
 
@@ -28,5 +28,7 @@ public interface JournalRepository {
 
     Completable updateEntry(JournalEntryEntity entity);
 
-  //  Completable deleteEntry(JournalEntryEntity entry);
+    void deleteEntry(JournalEntryEntity entry, final String email);
+
+
 }

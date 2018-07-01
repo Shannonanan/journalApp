@@ -27,4 +27,9 @@ public class EntryListViewModel extends ViewModel {
         return journalRepository.getAllEntries();
     }
 
+    public void deleteEntryInRemote(JournalEntryEntity entity, String email)
+    {
+        journalRepository.deleteEntry(entity, email);
+    }
+
 }

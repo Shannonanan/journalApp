@@ -27,7 +27,6 @@ public class RemoteDataSource implements JournalRepository {
   //  private final Context context;
     private FirebaseFirestore db;
     private FirebaseAuth firebaseAuth;
-    private String TAG = "uploads";
     private final AppExecutors mExecutors;
 
     public RemoteDataSource(AppExecutors mExecutors) {
@@ -37,7 +36,7 @@ public class RemoteDataSource implements JournalRepository {
     }
 
     @Override
-    public void insertEntry(final JournalEntryEntity entry, final String email) {
+    public void insertEntry(final JournalEntryEntity entry, final String email, final LoadInfoCallback callback) {
         checkNotNull(entry);
         Runnable saveRunnable = new Runnable() {
             @Override
@@ -47,13 +46,13 @@ public class RemoteDataSource implements JournalRepository {
                         .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                             @Override
                             public void onSuccess(DocumentReference documentReference) {
-                                Log.d(TAG, "successful upload");
+                                callback.onDataLoaded(1);
                             }
                         })
                         .addOnFailureListener(new OnFailureListener() {
                             @Override
                             public void onFailure(@NonNull Exception e) {
-                                Log.d(TAG, "failed upload");
+                                callback.onDataNotAvailable("error");
                             }
                         });
             }
@@ -76,6 +75,9 @@ public class RemoteDataSource implements JournalRepository {
         return null;
     }
 
+    @Override
+    public void deleteEntry(JournalEntryEntity entry, final String email) {
 
+    }
 
 }
