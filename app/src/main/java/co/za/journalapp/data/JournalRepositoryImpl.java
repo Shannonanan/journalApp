@@ -46,6 +46,9 @@ public class JournalRepositoryImpl implements JournalRepository {
 
     @Override
     public void insertEntry(final JournalEntryEntity entry, final String email, LoadInfoCallback callback) {
+        if (mCachedInfo == null) {
+            mCachedInfo = new LinkedHashMap<>();
+        }
         mLocalDataSource.insertEntry(entry, email, new LoadInfoCallback() {
             @Override
             public void onDataLoaded(int uniqueId) {
@@ -54,6 +57,7 @@ public class JournalRepositoryImpl implements JournalRepository {
                     @Override
                     public void onDataLoaded(int success) {
                         Log.d(TAG, "successful upload");
+                        mCachedInfo.put(entry.getId(), entry);
                     }
 
                     @Override
@@ -67,12 +71,6 @@ public class JournalRepositoryImpl implements JournalRepository {
 
             }
         });
-
-        if (mCachedInfo == null) {
-            mCachedInfo = new LinkedHashMap<>();
-        }
-
-        mCachedInfo.put(entry.getId(), entry);
     }
 
     @Override

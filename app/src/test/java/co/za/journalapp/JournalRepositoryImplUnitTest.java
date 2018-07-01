@@ -5,6 +5,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
+import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -80,11 +81,11 @@ public class JournalRepositoryImplUnitTest {
         JournalEntryEntity testEntry = new JournalEntryEntity("date", "time","test entry 1", fakeEmail);
 
         // When entries are saved to the EpicRespository repository
-        journalRepositoryImpl.insertEntry(testEntry, fakeEmail);
+        journalRepositoryImpl.insertEntry(Matchers.any(JournalEntryEntity.class), Matchers.eq(fakeEmail),  mLoadInfoCallbackCaptor.capture());
 
         // Then the service API and persistent repository are called and the cache is updated
 
-        verify(mLocalDataSource).insertEntry(testEntry, fakeEmail);
+        verify(mLocalDataSource).insertEntry(Matchers.any(JournalEntryEntity.class), Matchers.eq(fakeEmail), mLoadInfoCallbackCaptor.capture());
         assertThat(journalRepositoryImpl.mCachedInfo.size(), is(1));
     }
 
@@ -103,11 +104,11 @@ public class JournalRepositoryImplUnitTest {
     public void getAllEntries_(){
         String fakeEmail = "shannon@gmail.com";
         JournalEntryEntity testEntry1 = new JournalEntryEntity("date", "time","test entry 1", fakeEmail);
-        journalRepositoryImpl.insertEntry(testEntry1, fakeEmail);
+        journalRepositoryImpl.insertEntry(testEntry1, fakeEmail, mLoadInfoCallbackCaptor.capture());
         JournalEntryEntity testEntry2 = new JournalEntryEntity("date", "time","test entry 1", fakeEmail);
-        journalRepositoryImpl.insertEntry(testEntry2, fakeEmail);
+        journalRepositoryImpl.insertEntry(testEntry2, fakeEmail, mLoadInfoCallbackCaptor.capture());
         JournalEntryEntity testEntry3 = new JournalEntryEntity("date", "time","test entry 1", fakeEmail);
-        journalRepositoryImpl.insertEntry(testEntry3, fakeEmail);
+        journalRepositoryImpl.insertEntry(testEntry3, fakeEmail, mLoadInfoCallbackCaptor.capture());
 
         journalRepositoryImpl.getAllEntries();
 
