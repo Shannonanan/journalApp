@@ -62,7 +62,7 @@ public class DetailActivity extends AppCompatActivity {
         mDb = JournalEntryDatabase.getInstance(getApplicationContext());
         JournalEntryDao journalEntryDao = mDb.journalEntryDao();
         LocalDataSource localDataSource = new LocalDataSource(journalEntryDao, AppExecutors.getInstance());
-        RemoteDataSource remoteDataSource = new RemoteDataSource(AppExecutors.getInstance());
+        RemoteDataSource remoteDataSource = new RemoteDataSource(AppExecutors.getInstance(), this);
         journalRepository = new JournalRepositoryImpl(localDataSource, remoteDataSource, mDb);
         setupViewModel();
         email = sharedpreferences.getString(Constants.EMAIL, "");

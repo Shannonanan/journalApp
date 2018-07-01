@@ -15,7 +15,8 @@
     <string name="backup_data">Backup data</string>
 
     <!--backup data path !-->
-    <string name="backup_data_firebase_path">users/usersInstance/entries/</string>
+    <string name="path_to_posts">users/userInstance/entries/</string>
+
 
 
 
