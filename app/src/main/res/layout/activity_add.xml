@@ -34,7 +34,8 @@
                 android:text="25th June 2018"
                 android:textAppearance="@style/TextAppearance.AppCompat.Display1"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                android:textColor="@color/colorPrimary"/>
 
             <TextView
                 android:id="@+id/tv_time"
@@ -51,10 +52,11 @@
                 android:id="@+id/btn_post"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-
+                android:background="@color/colorPrimaryDark"
                 android:layout_marginLeft="8dp"
                 android:layout_marginStart="8dp"
                 android:text="@string/post_btn"
+                android:textColor="@color/grey_100"
                 app:layout_constraintBottom_toBottomOf="@+id/tv_date"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.555"
@@ -70,8 +72,8 @@
                 android:layout_marginTop="8dp"
                 android:hint="@string/app_name"
                 android:inputType="textMultiLine"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="@+id/btn_post"
+                app:layout_constraintStart_toStartOf="@+id/tv_time"
                 app:layout_constraintTop_toBottomOf="@+id/tv_time" />
 
         </android.support.constraint.ConstraintLayout>

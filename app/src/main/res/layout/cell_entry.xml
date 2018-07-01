@@ -30,7 +30,8 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.0"
         android:textAppearance="@style/TextAppearance.AppCompat.Headline"
-        tools:text="25 January 2018" />
+        tools:text="25 January 2018"
+        android:textColor="@color/colorPrimary"/>
 
     <TextView
         android:id="@+id/time"
@@ -54,6 +55,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
+        android:textColor="@color/colorPrimaryDark"
         tools:text="Journal Entry..."
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"/>
 

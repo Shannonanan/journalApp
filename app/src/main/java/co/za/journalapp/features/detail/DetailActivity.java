@@ -1,20 +1,16 @@
 package co.za.journalapp.features.detail;
 
 
-import android.app.Activity;
+
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProvider;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.annotation.Nullable;
-import android.support.annotation.StringRes;
 import android.support.design.widget.CoordinatorLayout;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -100,14 +96,6 @@ public class DetailActivity extends AppCompatActivity implements DetailContract{
         });
     }
 
-//    private void setupSnackbar() {
-//        detailViewModel.getSnackbarMessage().observe(this, new SnackbarMessage.SnackbarObserver() {
-//            @Override
-//            public void onNewMessage(@StringRes int snackbarMessageResourceId) {
-//                SnackbarUtils.showSnackbar(coordinatorLayout, getString(snackbarMessageResourceId));
-//            }
-//        });
-//    }
 
     private void populateUi(JournalEntryEntity journalEntryEntity) {
         //set date,time, entry
@@ -151,10 +139,6 @@ public class DetailActivity extends AppCompatActivity implements DetailContract{
 
     @Override
     public void onUpdateSuccess(String status) {
-//        Snackbar snackbar = Snackbar
-//                .make(coordinatorLayout, getString(R.string.update_successfull), Snackbar.LENGTH_LONG);
-//        snackbar.show();
-
         hideLoading();
         Toast.makeText(this, getString(R.string.update_successfull), Toast.LENGTH_LONG).show();
     }
