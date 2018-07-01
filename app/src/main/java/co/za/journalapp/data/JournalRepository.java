@@ -6,26 +6,38 @@ import java.util.List;
 
 import co.za.journalapp.data.localRepository.JournalEntryEntity;
 import io.reactivex.Completable;
+import io.reactivex.Observable;
 
 public interface JournalRepository {
 
 
     interface LoadInfoCallback {
 
-        void onDataLoaded(String success);
+        void onDataLoaded(int success);
 
         void onDataNotAvailable(String error);
     }
 
+    interface LoadEntriesCallback{
 
-    //completeable is only indication of completion or exception
-    Completable insertEntry(JournalEntryEntity event);
+        void onEntriesLoaded(List<JournalEntryEntity> list);
+        void OnDataUnavailable(String error);
+    }
+
+
+    void insertEntry(JournalEntryEntity event, String email, LoadInfoCallback callback);
 
     LiveData<List<JournalEntryEntity>> getAllEntries();
 
     LiveData<JournalEntryEntity> getEntry(int id);
 
-    Completable updateEntry(JournalEntryEntity entity);
+    void updateEntry(JournalEntryEntity entity, LoadInfoCallback callback);
 
-  //  Completable deleteEntry(JournalEntryEntity entry);
+    void deleteEntry(JournalEntryEntity entry, LoadInfoCallback callback);
+
+    void getEntriesRemotely(String email, LoadEntriesCallback callback);
+
+    void saveBatchToLocal(List<JournalEntryEntity>list);
+
+
 }

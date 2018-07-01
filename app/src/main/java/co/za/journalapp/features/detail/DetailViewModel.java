@@ -6,6 +6,9 @@ import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.ViewModel;
 import android.support.annotation.NonNull;
 
+import co.za.journalapp.R;
+import co.za.journalapp.SnackbarMessage;
+import co.za.journalapp.data.JournalRepository;
 import co.za.journalapp.data.JournalRepositoryImpl;
 import co.za.journalapp.data.localRepository.JournalEntryEntity;
 import io.reactivex.CompletableObserver;
@@ -19,10 +22,24 @@ public class DetailViewModel extends ViewModel {
 
 
     private JournalRepositoryImpl journalRepository;
+    private DetailContract detailContract;
+
+   // private final SnackbarMessage mSnackbarText = new SnackbarMessage();
 
     public DetailViewModel(JournalRepositoryImpl journalRepository) {
         this.journalRepository = journalRepository;
     }
+
+    public void setView(@NonNull DetailContract view) {
+        this.detailContract = view;
+    }
+
+//    SnackbarMessage getSnackbarMessage() {
+//        return mSnackbarText;
+//    }
+//    private void showSnackbarMessage(Integer message) {
+//        mSnackbarText.setValue(message);
+//    }
 
 
     LiveData<JournalEntryEntity>getEntry(int id){
@@ -30,23 +47,19 @@ public class DetailViewModel extends ViewModel {
     }
 
     public void updateEntry(JournalEntryEntity journalEntryEntity){
-         journalRepository.updateEntry(journalEntryEntity).observeOn(AndroidSchedulers.mainThread())
-                 .subscribeOn(Schedulers.io())
-                 .subscribe(new CompletableObserver() {
-                     @Override
-                     public void onSubscribe(Disposable d) {
+         journalRepository.updateEntry(journalEntryEntity, new JournalRepository.LoadInfoCallback() {
+             @Override
+             public void onDataLoaded(int success) {
+                 //speak back to view
 
-                     }
+                // showSnackbarMessage((R.string.app_name));
+                 detailContract.onUpdateSuccess("success");
+             }
 
-                     @Override
-                     public void onComplete() {
+             @Override
+             public void onDataNotAvailable(String error) {
 
-                     }
-
-                     @Override
-                     public void onError(Throwable e) {
-
-                     }
-                 });
+             }
+         });
     }
 }

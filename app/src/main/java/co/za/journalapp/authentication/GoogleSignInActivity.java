@@ -1,6 +1,8 @@
 package co.za.journalapp.authentication;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
@@ -21,6 +23,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 
+import co.za.journalapp.Constants;
 import co.za.journalapp.R;
 import co.za.journalapp.features.viewAllEntries.EntryListActivity;
 
@@ -35,6 +38,7 @@ public class GoogleSignInActivity extends BaseActivity implements
     private static final String TAG = "GoogleActivity";
     private static final int RC_SIGN_IN = 9001;
 
+
     // [START declare_auth]
     private FirebaseAuth mAuth;
     // [END declare_auth]
@@ -42,6 +46,9 @@ public class GoogleSignInActivity extends BaseActivity implements
     private GoogleSignInClient mGoogleSignInClient;
     private TextView mStatusTextView;
     private TextView mDetailTextView;
+
+    SharedPreferences sharedpreferences;
+    SharedPreferences.Editor editor;
 
     static boolean  signout =false;
 
@@ -55,14 +62,10 @@ public class GoogleSignInActivity extends BaseActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register_and_login);
 
-        // Views
-     //   mStatusTextView = findViewById(R.id.status);
-     //   mDetailTextView = findViewById(R.id.detail);
+        sharedpreferences = getApplicationContext().getSharedPreferences(Constants.MyPREFERENCES, Context.MODE_PRIVATE);
 
         // Button listeners
         findViewById(R.id.sign_in_button).setOnClickListener(this);
-       // findViewById(R.id.sign_out_button).setOnClickListener(this);
-      //  findViewById(R.id.disconnect_button).setOnClickListener(this);
 
         // [START config_signin]
         // Configure Google Sign In
@@ -186,6 +189,10 @@ public class GoogleSignInActivity extends BaseActivity implements
     private void updateUI(FirebaseUser user) {
         hideProgressDialog();
         if (user != null) {
+
+            editor = sharedpreferences.edit();
+            editor.putString(Constants.EMAIL, user.getEmail());
+            editor.apply();
 
             Intent intent = new Intent(this, EntryListActivity.class);
             startActivity(intent);

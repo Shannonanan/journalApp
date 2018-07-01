@@ -18,8 +18,14 @@ buildscript {
 
 allprojects {
     repositories {
+        gradle.projectsEvaluated {
+            tasks.withType(JavaCompile) {
+                options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
+            }
+        }
         google()
         jcenter()
+
     }
 }
 
@@ -47,4 +53,5 @@ ext {
     rulesVersion = '1.0.1'
     espressoVersion = '3.0.2'
     roomVersion = "1.1.1"
+    googleServicesVersion = '11.8.0'
 }

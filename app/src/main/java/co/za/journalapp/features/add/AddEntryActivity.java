@@ -3,14 +3,20 @@ package co.za.journalapp.features.add;
 import android.arch.lifecycle.ViewModelProvider;
 import android.arch.lifecycle.ViewModelProviders;
 import android.arch.persistence.room.RoomDatabase;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.airbnb.lottie.LottieAnimationView;
 
 import org.joda.time.DateTime;
 
@@ -22,12 +28,15 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import co.za.journalapp.AppExecutors;
+import co.za.journalapp.Constants;
 import co.za.journalapp.R;
 import co.za.journalapp.data.JournalRepositoryImpl;
 import co.za.journalapp.data.localRepository.JournalEntryDao;
 import co.za.journalapp.data.localRepository.JournalEntryDatabase;
 import co.za.journalapp.data.localRepository.JournalEntryEntity;
 import co.za.journalapp.data.localRepository.LocalDataSource;
+import co.za.journalapp.data.remoteRepository.RemoteDataSource;
+
 
 public class AddEntryActivity extends AppCompatActivity {
 
@@ -36,12 +45,16 @@ public class AddEntryActivity extends AppCompatActivity {
     @BindView(R.id.et_entry)EditText et_entry;
     @BindView(R.id.tv_date)TextView tv_date;
     @BindView(R.id.tv_time) TextView tv_time;
+    @BindView(R.id.rl_progress_lottie) RelativeLayout rl_progress;
+    @BindView(R.id.animation_view) LottieAnimationView pb_progress;
 
 
     private AddEntryViewModel addEntryViewModel;
     private JournalEntryDatabase mDb;
     private JournalRepositoryImpl journalRepository;
-    private LocalDataSource localDataSource;
+
+    private String email;
+    SharedPreferences sharedpreferences;
 
 
     private int mTaskId = DEFAULT_TASK_ID;
@@ -49,17 +62,19 @@ public class AddEntryActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_add_entry);
+        setContentView(R.layout.activity_add);
 
         ButterKnife.bind(this);
-
+        sharedpreferences = getApplicationContext().getSharedPreferences(Constants.MyPREFERENCES, Context.MODE_PRIVATE);
         mDb = JournalEntryDatabase.getInstance(getApplicationContext());
         JournalEntryDao journalEntryDao = mDb.journalEntryDao();
-        localDataSource = new LocalDataSource(journalEntryDao, AppExecutors.getInstance());
-        journalRepository = new JournalRepositoryImpl(localDataSource, mDb);
+        LocalDataSource localDataSource = new LocalDataSource(journalEntryDao, AppExecutors.getInstance());
+        RemoteDataSource remoteDataSource = new RemoteDataSource(AppExecutors.getInstance(), this);
+        journalRepository = new JournalRepositoryImpl(localDataSource, remoteDataSource, mDb);
 
         setupClickListeners();
         setupViewModel();
+        email = sharedpreferences.getString(Constants.EMAIL, "");
     }
 
 
@@ -96,8 +111,8 @@ public class AddEntryActivity extends AppCompatActivity {
     @OnClick(R.id.btn_post)
     public  void postEntry()
     {
-        final JournalEntryEntity task = new JournalEntryEntity(getCurrentDate(), getCurrentTime(), et_entry.getText().toString());
-        addEntryViewModel.addEntry(task);
+        final JournalEntryEntity entry = new JournalEntryEntity(getCurrentDate(), getCurrentTime(), et_entry.getText().toString(), email);
+        addEntryViewModel.addEntry(entry, email);
         Toast.makeText(this, getString(R.string.save_post), Toast.LENGTH_LONG).show();
         finish();
 
@@ -147,5 +162,16 @@ public class AddEntryActivity extends AppCompatActivity {
 
         else{
             return hoursInDay + ":" + minInDay;}
+    }
+
+    public void showLoading() {
+        this.rl_progress.setVisibility(View.VISIBLE);
+    }
+
+
+    public void hideLoading() {
+        if (rl_progress != null) {
+            this.rl_progress.setVisibility(View.GONE);
+        }
     }
 }

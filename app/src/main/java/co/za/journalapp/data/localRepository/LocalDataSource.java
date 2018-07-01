@@ -1,19 +1,19 @@
 package co.za.journalapp.data.localRepository;
 
 import android.arch.lifecycle.LiveData;
-
-import java.util.Date;
 import java.util.List;
-
 import co.za.journalapp.AppExecutors;
 import co.za.journalapp.data.JournalRepository;
 import io.reactivex.Completable;
-import io.reactivex.functions.Action;
+
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 public class LocalDataSource implements JournalRepository {
 
     private final JournalEntryDao journalEntryDao;
     private final AppExecutors mExecutors;
+
 
     public LocalDataSource(JournalEntryDao journalEntryDao, AppExecutors mExecutors) {
         this.journalEntryDao = journalEntryDao;
@@ -22,18 +22,30 @@ public class LocalDataSource implements JournalRepository {
 
 
     @Override
-    public Completable insertEntry(final JournalEntryEntity event) {
-        if(event == null) {
-            return Completable.error(new IllegalArgumentException("Event cannot be null"));
-        }
-       return Completable.fromAction(new Action() {
-           @Override
-           public void run() throws Exception {
-               journalEntryDao.insertEntry(event);
-               String test = "hello";
-           }
-       });
+    public void insertEntry(final JournalEntryEntity entry, String email, final LoadInfoCallback callback) {
+        checkNotNull(entry);
+        Runnable saveRunnable = new Runnable() {
+            @Override
+            public void run() {
+                long getIndex =  journalEntryDao.insertEntry(entry);
+                int i = (int) getIndex;
+                callback.onDataLoaded(i);
+            }
+        };
+        mExecutors.diskIO().execute(saveRunnable);
 
+    }
+
+    public void saveBatchToLocal(final  List<JournalEntryEntity>list) {
+        Runnable saveRunnable = new Runnable() {
+            @Override
+            public void run() {
+                for (JournalEntryEntity entry : list) {
+                    journalEntryDao.insertEntry(entry);
+                }
+            }
+        };
+        mExecutors.diskIO().execute(saveRunnable);
     }
 
     @Override
@@ -47,18 +59,38 @@ public class LocalDataSource implements JournalRepository {
     }
 
     @Override
-    public Completable updateEntry(JournalEntryEntity entity) {
-        return null;
+    public void updateEntry(final JournalEntryEntity entry, final LoadInfoCallback callback) {
+        checkNotNull(entry);
+        Runnable saveRunnable =  new Runnable() {
+            @Override
+            public void run() {
+                int success = 1;
+                journalEntryDao.updateEntry(entry);
+                callback.onDataLoaded(success);
+            }
+        };
+        mExecutors.diskIO().execute(saveRunnable);
     }
 
 
-//    @Override
-//    public Completable deleteEntry(final JournalEntryEntity entry) {
-//        return Completable.fromAction(new Action() {
-//            @Override
-//            public void run() throws Exception {
-//                journalEntryDao.deleteTask(entry);
-//            }
-//        });
-//    }
+    @Override
+    public void deleteEntry(final JournalEntryEntity entry, final LoadInfoCallback callback) {
+        checkNotNull(entry);
+        Runnable saveRunnable = new Runnable() {
+            @Override
+            public void run() {
+                int success = 1;
+                journalEntryDao.deleteTask(entry);
+                callback.onDataLoaded(success);
+            }
+        };
+        mExecutors.diskIO().execute(saveRunnable);
+    }
+
+    @Override
+    public void getEntriesRemotely(String email, LoadEntriesCallback callback) {
+
+    }
+
+
 }
